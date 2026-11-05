@@ -21,29 +21,30 @@
   --font-texto: "Inter", system-ui, sans-serif;
 }
 
-body {
-  background: var(--color-areia);
-  color: var(--color-marinho);
-  font-family: var(--font-texto);
-  font-size: 16px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
+@layer base {
+  body {
+    background: var(--color-areia);
+    color: var(--color-marinho);
+    font-family: var(--font-texto);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
 
-h1, h2, h3 {
-  font-family: var(--font-titulo);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
+  h1, h2, h3 {
+    font-family: var(--font-titulo);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
 
-/* Detalhes que quase todo site esquece */
-::selection {
-  background: var(--color-dourado);
-  color: var(--color-marinho);
-}
+  ::selection {
+    background: var(--color-dourado);
+    color: var(--color-marinho);
+  }
 
-:focus-visible {
-  outline: 3px solid var(--color-dourado);
-  outline-offset: 3px;
+  :focus-visible {
+    outline: 3px solid var(--color-dourado);
+    outline-offset: 3px;
+  }
 }

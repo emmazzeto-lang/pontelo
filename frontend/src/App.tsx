@@ -4,6 +4,7 @@ import Inicio from './paginas/Inicio'
 import Resultados from './paginas/Resultados'
 import DetalheServico from './paginas/DetalheServico'
 import NaoEncontrada from './paginas/NaoEncontrada'
+import Vitrine from './paginas/Vitrine'
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="servicos" element={<Resultados />} />
         <Route path="servicos/:id" element={<DetalheServico />} />
         <Route path="*" element={<NaoEncontrada />} />
+        <Route path="vitrine" element={<Vitrine />} />
       </Route>
     </Routes>
   )
