@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* Cores e fontes da documentação técnica (seção 2) */
+@theme {
+  --color-marinho: #13365d;
+  --color-azul: #1f5f94;
+  --color-azul-hover: #1a5283;
+  --color-dourado: #e8c35e;
+  --color-dourado-hover: #ddb548;
+  --color-dourado-escuro: #d4a62a;
+  --color-areia: #f8f5ee;
+  --color-ardosia: #4a5a6e;
+  --color-nevoa: #d9dee5;
+  --color-azul-claro: #e8f0f7;
+  --color-verificado: #2e7d5b;
+  --color-verde-claro: #e6f2ec;
+  --color-a-confirmar: #9a6700;
+  --color-erro: #b3261e;
+
+  --font-titulo: "Nunito", system-ui, sans-serif;
+  --font-texto: "Inter", system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-areia);
+  color: var(--color-marinho);
+  font-family: var(--font-texto);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-titulo);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* Detalhes que quase todo site esquece */
+::selection {
+  background: var(--color-dourado);
+  color: var(--color-marinho);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-dourado);
+  outline-offset: 3px;
+}
