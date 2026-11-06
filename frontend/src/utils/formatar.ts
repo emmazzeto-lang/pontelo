@@ -20,3 +20,7 @@ export function formatarDistancia(metros: number) {
   const km = (metros / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })
   return `${km} km`
 }
+
+export function diasAtras(dias: number) {
+  return new Date(Date.now() - dias * UM_DIA_MS).toISOString()
+}

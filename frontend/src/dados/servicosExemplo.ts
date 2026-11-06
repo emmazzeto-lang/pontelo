@@ -1,8 +1,5 @@
 import type { Servico } from '../servicos/tipos'
-
-// Dados fictícios, só para montar as telas antes da API ficar pronta
-const UM_DIA_MS = 24 * 60 * 60 * 1000
-const diasAtras = (dias: number) => new Date(Date.now() - dias * UM_DIA_MS).toISOString()
+import { diasAtras } from '../utils/formatar'
 
 export const servicosExemplo: Servico[] = [
   {
@@ -40,5 +37,77 @@ export const servicosExemplo: Servico[] = [
     telefone: null,
     ultima_verificacao_em: diasAtras(125),
     localizacao: { lat: -23.544, lng: -46.642 },
+  },
+    {
+    id: '4',
+    nome: 'Casa de Acolhida Novo Caminho',
+    categoria: 'abrigo',
+    distancia_m: 1900,
+    aberto_agora: true,
+    horario_hoje: 'recebe até as 22h',
+    endereco: 'Rua da Paz, 410 · Luz',
+    telefone: '1133332222',
+    ultima_verificacao_em: diasAtras(20),
+    localizacao: { lat: -23.535, lng: -46.636 },
+  },
+  {
+    id: '5',
+    nome: 'Defensoria Comunitária do Centro',
+    categoria: 'juridico',
+    distancia_m: 2200,
+    aberto_agora: false,
+    horario_hoje: 'abre amanhã às 9h',
+    endereco: 'Rua Direita, 77 · Sé',
+    telefone: '1133333333',
+    ultima_verificacao_em: diasAtras(45),
+    localizacao: { lat: -23.549, lng: -46.633 },
+  },
+  {
+    id: '6',
+    nome: 'Unidade Básica de Saúde Vila Nova',
+    categoria: 'saude',
+    distancia_m: 640,
+    aberto_agora: true,
+    horario_hoje: 'fecha às 17h',
+    endereco: 'Rua Augusta, 900 · Consolação',
+    telefone: '1133334444',
+    ultima_verificacao_em: diasAtras(6),
+    localizacao: { lat: -23.552, lng: -46.65 },
+  },
+  {
+    id: '7',
+    nome: 'CRAS Região Central',
+    categoria: 'cras',
+    distancia_m: 3400,
+    aberto_agora: true,
+    horario_hoje: 'fecha às 16h',
+    endereco: 'Av. Rio Branco, 1500 · Campos Elíseos',
+    telefone: '1133335555',
+    ultima_verificacao_em: diasAtras(30),
+    localizacao: { lat: -23.531, lng: -46.645 },
+  },
+  {
+    id: '8',
+    nome: 'Posto de Documentos Cidadão',
+    categoria: 'documentos',
+    distancia_m: 5100,
+    aberto_agora: true,
+    horario_hoje: 'fecha às 16h',
+    endereco: 'Rua Vergueiro, 2000 · Vila Mariana',
+    telefone: null,
+    ultima_verificacao_em: diasAtras(100),
+    localizacao: { lat: -23.583, lng: -46.637 },
+  },
+  {
+    id: '9',
+    nome: 'Cozinha Solidária Vila Esperança',
+    categoria: 'refeicao',
+    distancia_m: 7800,
+    aberto_agora: true,
+    horario_hoje: 'fecha às 13h',
+    endereco: 'Rua do Bosque, 58 · Barra Funda',
+    telefone: '1133336666',
+    ultima_verificacao_em: diasAtras(15),
+    localizacao: { lat: -23.525, lng: -46.667 },
   },
 ]

@@ -13,3 +13,12 @@ export type Servico = {
   ultima_verificacao_em: string | null
   localizacao: { lat: number; lng: number }
 }
+
+export type Local =
+  | { tipo: 'gps'; lat: number; lng: number }
+  | { tipo: 'texto'; texto: string }
+
+export type Busca = {
+  local: Local | null
+  categoria: Categoria | null
+}
