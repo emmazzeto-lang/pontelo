@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import CaixaBusca from '../componentes/CaixaBusca'
 import CardServico from '../componentes/CardServico'
@@ -11,7 +11,10 @@ import { telefonesEmergencia } from '../dados/telefones'
 import { cores } from '../estilos/cores'
 import { filtrarServicos } from '../servicos/filtrar'
 import type { Busca, Categoria, Local } from '../servicos/tipos'
+import LimiteErroMapa from '../componentes/LimiteErroMapa'
 
+// Só baixa o mapa quando a pessoa abrir a visão de mapa
+const MapaServicos = lazy(() => import('../componentes/MapaServicos'))
 const RAIO_PERTO = 3000
 const RAIO_LONGE = 10000
 
@@ -125,9 +128,20 @@ function ListaResultados({ local, categoria }: ListaProps) {
           )}
         </>
       ) : (
-        <div className="mt-4 grid min-h-80 place-items-center rounded-2xl border border-nevoa bg-white p-6 text-center text-ardosia">
-          O mapa entra na Etapa 6.
-        </div>
+        <div className="mt-4">
+          <h2 className="sr-only">Mapa de serviços</h2>
+          <LimiteErroMapa aoVoltarParaLista={() => setVisao('lista')}>
+            <Suspense
+               fallback={
+                <div role="status" className="grid min-h-80 place-items-center rounded-2xl border border-nevoa bg-white p-6 text-ardosia">
+                  Carregando o mapa…
+                </div>
+      }
+    >
+      <MapaServicos servicos={servicos} local={local} />
+    </Suspense>
+  </LimiteErroMapa>
+</div>
       )}
     </section>
   )

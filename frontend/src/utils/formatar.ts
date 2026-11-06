@@ -24,3 +24,7 @@ export function formatarDistancia(metros: number) {
 export function diasAtras(dias: number) {
   return new Date(Date.now() - dias * UM_DIA_MS).toISOString()
 }
+
+export function linkDeRota(lat: number, lng: number) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+}

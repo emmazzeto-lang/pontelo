@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import type { Servico } from '../servicos/tipos'
 import { categoriaPorSlug } from '../dados/categorias'
-import { formatarDistancia } from '../utils/formatar'
+import { formatarDistancia, linkDeRota } from '../utils/formatar'
 import { cores } from '../estilos/cores'
 import Icone from './Icone'
 import SeloConfianca from './SeloConfianca'
@@ -11,8 +11,7 @@ type Props = { servico: Servico }
 
 export default function CardServico({ servico }: Props) {
   const categoria = categoriaPorSlug[servico.categoria]
-  const { lat, lng } = servico.localizacao
-  const rota = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+  const rota = linkDeRota(servico.localizacao.lat, servico.localizacao.lng)
 
   return (
     <article className="grid gap-3.5 rounded-2xl border border-nevoa bg-white p-5">
