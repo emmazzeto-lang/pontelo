@@ -28,3 +28,9 @@ export function diasAtras(dias: number) {
 export function linkDeRota(lat: number, lng: number) {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
 }
+
+// "11:00" vira "11h" e "11:30" vira "11h30"
+export function formatarHora(hora: string) {
+  const [h, m] = hora.split(':')
+  return m === '00' ? `${Number(h)}h` : `${Number(h)}h${m}`
+}

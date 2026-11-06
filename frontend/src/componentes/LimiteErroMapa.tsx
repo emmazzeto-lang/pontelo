@@ -3,6 +3,8 @@ import { Botao } from './Botao'
 
 type Props = {
   aoVoltarParaLista: () => void
+  mensagem?: string
+  textoBotao?: string
   children: ReactNode
 }
 
@@ -23,9 +25,9 @@ export default class LimiteErroMapa extends Component<Props, Estado> {
         <div>
           <h2 className="text-2xl">Não foi possível carregar o mapa</h2>
           <p className="mb-4 mt-2 text-ardosia">
-            Sua conexão pode estar fraca. A lista tem as mesmas informações.
-          </p>
-          <Botao onClick={this.props.aoVoltarParaLista}>Ver a lista</Botao>
+            {this.props.mensagem ?? 'Sua conexão pode estar fraca. A lista tem as mesmas informações.'}
+            </p>
+            <Botao onClick={this.props.aoVoltarParaLista}>{this.props.textoBotao ?? 'Ver a lista'}</Botao>
         </div>
       </div>
     )

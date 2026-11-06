@@ -14,7 +14,7 @@ import type { Local, Servico } from '../servicos/tipos'
 
 type Props = {
   servicos: Servico[]
-  local: Local
+  local?: Local
 }
 
 export default function MapaServicos({ servicos, local }: Props) {
@@ -30,7 +30,7 @@ export default function MapaServicos({ servicos, local }: Props) {
 
         <EnquadrarServicos servicos={servicos} />
 
-        {local.tipo === 'gps' && (
+        {local?.tipo === 'gps' && (
           <CircleMarker
             center={[local.lat, local.lng]}
             radius={9}

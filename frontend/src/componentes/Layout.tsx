@@ -1,4 +1,5 @@
-import { Outlet } from 'react-router'
+import { useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router'
 import BarraEmergencia from './BarraEmergencia'
 import Cabecalho from './Cabecalho'
 import Rodape from './Rodape'
@@ -6,6 +7,12 @@ import { useAtalhoSaidaRapida } from '../hooks/useSaidaRapida'
 
 export default function Layout() {
   useAtalhoSaidaRapida()
+
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 
   return (
     <div className="flex min-h-screen flex-col">
