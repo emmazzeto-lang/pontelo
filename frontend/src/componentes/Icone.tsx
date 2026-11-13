@@ -135,6 +135,16 @@ const desenhos = {
   mais: (a: string) => (
     <path d="M12 6v12M6 12h12" stroke={a} strokeWidth={3.2} strokeLinecap="round" />
   ),
+  // Três linhas de larguras diferentes, menos "ícone padrão" que o hambúrguer igual
+  menu: (a: string, b: string) => (
+    <>
+      <path d="M4 6.5h16M4 12h16" stroke={a} strokeWidth={2.6} strokeLinecap="round" />
+      <path d="M4 17.5h10" stroke={b} strokeWidth={2.6} strokeLinecap="round" />
+    </>
+  ),
+  fechar: (a: string) => (
+    <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke={a} strokeWidth={2.6} strokeLinecap="round" />
+  ),
 } satisfies Record<string, (a: string, b: string) => ReactElement>
 
 export type NomeIcone = keyof typeof desenhos

@@ -76,4 +76,22 @@ export const rotasPublicas: FastifyPluginAsyncZod = async (app) => {
       return resposta.status(201).send({ dados: { recebida: true } })
     },
   )
+
+  app.get(
+    '/dados/servicos.geojson',
+    {
+      schema: {
+        tags: ['Dados abertos'],
+        summary: 'Todos os serviços publicados em GeoJSON (sem os de endereço sigiloso)',
+      },
+    },
+    async (_pedido, resposta) => {
+      resposta
+        .type('application/geo+json; charset=utf-8')
+        // Dado aberto: qualquer site pode ler, e pode ficar em cache por 1 hora
+        .header('Access-Control-Allow-Origin', '*')
+        .header('Cache-Control', 'public, max-age=3600')
+      return servicos.exportarGeoJson()
+    },
+  )
 }

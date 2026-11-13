@@ -12,14 +12,15 @@ type Props = {
   children: (usuario: Usuario) => ReactNode
 }
 
-// Mostra o conteúdo só para quem está logado (e com o papel certo); senão, explica e leva para o login
+// Mostra o conteúdo só para quem está logado (e com o papel certo); senão, explica e leva para o login.
+// Todos os estados usam min-h-screen: assim o rodapé não "sobe" de repente quando um troca pelo outro.
 export default function ExigeConta({ motivo, papel, children }: Props) {
   const sessao = useSessao()
   const { pathname } = useLocation()
 
   if (sessao.status === 'carregando') {
     return (
-      <div className="conteudo py-10">
+      <div className="conteudo min-h-screen py-10">
         <p role="status" className="text-ardosia">Carregando…</p>
       </div>
     )
@@ -27,27 +28,31 @@ export default function ExigeConta({ motivo, papel, children }: Props) {
 
   if (sessao.status === 'anonimo') {
     return (
-      <PaginaConta titulo="Entre para continuar" subtitulo={motivo}>
-        <BotaoLink para="/entrar" estado={{ de: pathname }} tamanho="lg" larguraTotal>
-          Entrar
-        </BotaoLink>
-        <p className="mt-6 text-ardosia">
-          Ainda não tem conta?{' '}
-          <Link to="/criar-conta" state={{ de: pathname }} className="font-semibold text-azul underline underline-offset-4">
-            Criar conta
-          </Link>
-        </p>
-      </PaginaConta>
+      <div className="min-h-screen">
+        <PaginaConta titulo="Entre para continuar" subtitulo={motivo}>
+          <BotaoLink para="/entrar" estado={{ de: pathname }} tamanho="lg" larguraTotal>
+            Entrar
+          </BotaoLink>
+          <p className="mt-6 text-ardosia">
+            Ainda não tem conta?{' '}
+            <Link to="/criar-conta" state={{ de: pathname }} className="font-semibold text-azul underline underline-offset-4">
+              Criar conta
+            </Link>
+          </p>
+        </PaginaConta>
+      </div>
     )
   }
 
   if (papel && sessao.usuario.papel !== papel) {
     return (
-      <PaginaConta titulo="Área restrita" subtitulo="Sua conta não tem acesso a esta página.">
-        <Link to="/" className="font-semibold text-azul underline underline-offset-4">
-          Voltar para o início
-        </Link>
-      </PaginaConta>
+      <div className="min-h-screen">
+        <PaginaConta titulo="Área restrita" subtitulo="Sua conta não tem acesso a esta página.">
+          <Link to="/" className="font-semibold text-azul underline underline-offset-4">
+            Voltar para o início
+          </Link>
+        </PaginaConta>
+      </div>
     )
   }
 

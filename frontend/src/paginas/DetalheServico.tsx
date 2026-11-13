@@ -25,7 +25,7 @@ export default function DetalheServico() {
 
   if (consulta.isPending) {
     return (
-      <div className="conteudo py-10">
+      <div className="conteudo min-h-screen py-10">
         <p role="status" className="text-ardosia">Carregando o serviço…</p>
       </div>
     )
@@ -145,7 +145,10 @@ function ConfirmarFuncionamento({ servicoId }: { servicoId: string }) {
     )
   }
 
-  const jaConfirmou = envio.error instanceof ErroApi && envio.error.codigo === 'CONFIRMACAO_RECENTE'
+  // Guarda o erro numa variável própria para o TypeScript saber que ele existe ao mostrar a mensagem
+  const avisoJaConfirmou =
+    envio.error instanceof ErroApi && envio.error.codigo === 'CONFIRMACAO_RECENTE' ? envio.error.message : null
+  const jaConfirmou = avisoJaConfirmou !== null
 
   return (
     <>
@@ -156,7 +159,7 @@ function ConfirmarFuncionamento({ servicoId }: { servicoId: string }) {
       )}
       <div role="status">
         {envio.isSuccess && <p className="font-semibold text-verificado">Obrigado! Você é mais um elo dessa ponte.</p>}
-        {jaConfirmou && <p className="font-semibold text-verificado">{envio.error.message}</p>}
+        {jaConfirmou && <p className="font-semibold text-verificado">{avisoJaConfirmou}</p>}
         {envio.isError && !jaConfirmou && (
           <p className="mt-2 font-medium text-erro">Não conseguimos registrar agora. Tente de novo em alguns minutos.</p>
         )}

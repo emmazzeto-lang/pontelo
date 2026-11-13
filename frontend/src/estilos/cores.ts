@@ -6,7 +6,7 @@ export const cores = {
   douradoEscuro: '#d4a62a',
   branco: '#ffffff',
   ardosia: '#4a5a6e',
-  verificado: '#2e7d5b',
+  verificado: '#2a7354',
   aConfirmar: '#9a6700',
   erro: '#b3261e',
 }

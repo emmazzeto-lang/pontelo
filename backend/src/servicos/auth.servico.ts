@@ -75,3 +75,27 @@ export async function perfil(id: string) {
   if (!usuario) throw new ErroApi(401, 'NAO_AUTENTICADO', 'Entre na sua conta para continuar.')
   return usuario
 }
+
+export async function exportarDados(id: string) {
+  const dados = await repositorio.dadosDoTitular(id)
+  if (!dados) throw new ErroApi(401, 'NAO_AUTENTICADO', 'Entre na sua conta para continuar.')
+
+  const { servicos, verificacoes, denuncias_denuncias_usuario_idTousuarios: denuncias, criado_em, ...conta } = dados
+  return {
+    gerado_em: new Date().toISOString(),
+    conta: { ...conta, criado_em: criado_em.toISOString() },
+    servicos_sugeridos: servicos.map((s) => ({ ...s, criado_em: s.criado_em.toISOString() })),
+    confirmacoes: verificacoes.map((v) => ({ servico: v.servicos.nome, em: v.criado_em.toISOString() })),
+    denuncias: denuncias.map((d) => ({ ...d, criado_em: d.criado_em.toISOString() })),
+  }
+}
+
+// Pede a senha de novo: quem pegou o celular desbloqueado não consegue apagar a conta de outra pessoa
+export async function excluirConta(id: string, senha: string) {
+  const usuario = await repositorio.buscarComSenha(id)
+  if (!usuario) throw new ErroApi(401, 'NAO_AUTENTICADO', 'Entre na sua conta para continuar.')
+  if (!(await argon2.verify(usuario.senha_hash, senha))) {
+    throw new ErroApi(401, 'SENHA_INCORRETA', 'Senha incorreta.')
+  }
+  await repositorio.anonimizar(id, await argon2.hash(randomBytes(32).toString('hex')))
+}

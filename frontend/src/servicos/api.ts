@@ -36,7 +36,7 @@ export class ErroApi extends Error {
 
 type Opcoes = {
   corpo?: unknown
-  metodo?: 'GET' | 'POST' | 'PATCH'
+  metodo?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
   // Rotas /auth: o navegador precisa mandar e receber o cookie de sessão
   comCookie?: boolean
 }
@@ -61,15 +61,18 @@ async function pedir<T>(caminho: string, opcoes: Opcoes = {}, jaRenovou = false)
     throw new ErroApi(0, 'SEM_CONEXAO', 'Sem conexão com a internet.')
   }
 
-  // O token de acesso vale 15 minutos. Se venceu, renova uma vez pelo cookie e repete o pedido.
-  if (resposta.status === 401 && token && !comCookie && !jaRenovou) {
-    if (await renovarSessao()) return pedir<T>(caminho, opcoes, true)
-  }
-
   if (!resposta.ok) {
     const erro = (await resposta.json().catch(() => null)) as {
       erro?: { codigo: string; mensagem: string; detalhes?: DetalheErro[] }
     } | null
+
+    // O token de acesso vale 15 minutos. Se venceu, renova uma vez pelo cookie e repete o pedido.
+    // Só para NAO_AUTENTICADO: "senha incorreta" também é 401, mas renovar não resolveria.
+    const tokenVenceu = resposta.status === 401 && erro?.erro?.codigo === 'NAO_AUTENTICADO'
+    if (tokenVenceu && token && !comCookie && !jaRenovou && (await renovarSessao())) {
+      return pedir<T>(caminho, opcoes, true)
+    }
+
     throw new ErroApi(
       resposta.status,
       erro?.erro?.codigo ?? 'ERRO',
@@ -239,6 +242,27 @@ export function sairSemEsperar() {
   }
 }
 
+// GET /me/dados: tudo o que o Pontelo guarda sobre a pessoa, salvo como arquivo .json
+export async function baixarMeusDados() {
+  const dados = usarExemplos ? { conta: obterToken() && usuarioExemplo } : await pedir<object>('/me/dados')
+  const arquivo = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(arquivo)
+  link.download = 'meus-dados-pontelo.json'
+  link.click()
+  URL.revokeObjectURL(link.href)
+}
+
+// DELETE /me: pede a senha de novo antes de excluir
+export async function excluirConta(senha: string) {
+  if (!usarExemplos) await pedir('/me', { metodo: 'DELETE', corpo: { senha } })
+  limparSessao()
+}
+
+// GeoJSON aberto (GET /dados/servicos.geojson) e documentação da API, para a página de dados abertos
+export const URL_GEOJSON = `${URL_API}/dados/servicos.geojson`
+export const URL_DOCUMENTACAO = `${new URL(URL_API).origin}/docs`
+
 // POST /auth/refresh. Cada cookie só vale UMA vez (a API troca a cada uso), então:
 // - dentro da aba, pedidos simultâneos dividem a mesma renovação;
 // - entre abas, a trava do navegador (Web Locks) faz uma esperar a outra.
@@ -254,8 +278,13 @@ export function renovarSessao(): Promise<boolean> {
 async function executarRenovacao() {
   const tentar = async () => {
     try {
-      const { dados } = await pedir<RespostaSessao>('/auth/refresh', { metodo: 'POST', comCookie: true }, true)
-      guardarSessao(dados.usuario, dados.token_acesso)
+      const resposta = await pedir<RespostaSessao | undefined>('/auth/refresh', { metodo: 'POST', comCookie: true }, true)
+      // 204: não há sessão neste navegador
+      if (!resposta) {
+        limparSessao()
+        return false
+      }
+      guardarSessao(resposta.dados.usuario, resposta.dados.token_acesso)
       return true
     } catch (erro) {
       // Quem já estava logado e ficou sem internet continua logado; sessão inválida, não

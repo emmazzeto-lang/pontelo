@@ -117,3 +117,29 @@ export async function criarConfirmacao(servicoId: string, usuarioId: string) {
   })
   return verificacao.criado_em
 }
+
+type LinhaDadosAbertos = {
+  id: string
+  nome: string
+  categoria: string
+  endereco: string
+  cidade: string
+  uf: string
+  cep: string | null
+  telefone: string | null
+  documentos_exigidos: string | null
+  ultima_verificacao_em: Date | null
+  selo: string
+  lat: number
+  lng: number
+}
+
+// Dados abertos: usa a view pública do schema.sql e deixa de fora quem tem endereço sigiloso
+export function servicosParaDadosAbertos() {
+  return banco.$queryRaw<LinhaDadosAbertos[]>`
+    SELECT id, nome, categoria_slug AS categoria, endereco, cidade, uf, cep, telefone, documentos_exigidos,
+           ultima_verificacao_em, selo, latitude AS lat, longitude AS lng
+      FROM vw_servicos_publicos
+     WHERE NOT endereco_restrito
+     ORDER BY uf, cidade, nome`
+}

@@ -157,6 +157,11 @@ model verificacoes {
   @@index([usuario_id], map: "idx_verificacoes_usuario")
 }
 
+model contatos_alerta {
+  email_hash    String   @id
+  confirmado_em DateTime @default(now()) @db.Timestamptz(6)
+}
+
 enum papel_usuario {
   colaborador
   organizacao

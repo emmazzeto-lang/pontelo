@@ -7,7 +7,7 @@ export default function BotaoSaidaRapida({ compacto = false }: Props) {
     <button
       type="button"
       onClick={sairRapido}
-      aria-label="Saída rápida: sai do site agora. Atalho: tecla Esc"
+      aria-label={compacto ? 'Sair: saída rápida do site (tecla Esc)' : 'Saída rápida (Esc): sai do site agora'}
       className="inline-flex min-h-11 items-center gap-2 rounded-[10px] bg-erro px-3.5 font-titulo text-sm font-extrabold text-white transition hover:brightness-110"
     >
       {compacto ? 'Sair' : 'Saída rápida'}

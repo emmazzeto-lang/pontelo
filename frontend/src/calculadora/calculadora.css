@@ -1,0 +1,94 @@
+/* Calculadora: visual próprio e neutro, sem as cores e fontes do Pontelo (faz parte do disfarce) */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html,
+body,
+#calculadora {
+  height: 100%;
+}
+
+body {
+  background: #16181d;
+  color: #f2f3f5;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation; /* sem zoom de toque duplo ao digitar rápido */
+}
+
+.calculadora {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 20px;
+  height: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+  padding: 24px 18px max(24px, env(safe-area-inset-bottom));
+}
+
+.visor {
+  display: block;
+  padding: 0 8px;
+  text-align: right;
+  font-size: clamp(56px, 18vw, 84px);
+  font-weight: 300;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.visor--pequeno {
+  font-size: clamp(40px, 12vw, 60px);
+}
+
+.teclado {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.tecla {
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 22px;
+  background: #2a2e36;
+  color: inherit;
+  font: inherit;
+  font-size: clamp(24px, 7vw, 30px);
+  cursor: pointer;
+  transition: filter 80ms;
+}
+
+.tecla:active {
+  filter: brightness(1.35);
+}
+
+.tecla:focus-visible {
+  outline: 3px solid #8ab4f8;
+  outline-offset: 2px;
+}
+
+.tecla--funcao {
+  background: #4a505c;
+}
+
+.tecla--operador {
+  background: #3d4a63;
+  color: #c9d8ff;
+}
+
+.tecla--igual {
+  background: #5b7cc4;
+  color: #fff;
+}
+
+.tecla--larga {
+  grid-column: span 2;
+  aspect-ratio: auto;
+  text-align: left;
+  padding-left: 32px;
+}
