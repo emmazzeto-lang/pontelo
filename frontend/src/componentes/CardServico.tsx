@@ -11,7 +11,7 @@ type Props = { servico: Servico }
 
 export default function CardServico({ servico }: Props) {
   const categoria = categoriaPorSlug[servico.categoria]
-  const rota = linkDeRota(servico.localizacao.lat, servico.localizacao.lng)
+  const rota = servico.localizacao ? linkDeRota(servico.localizacao.lat, servico.localizacao.lng) : null
 
   return (
     <article className="grid gap-3.5 rounded-2xl border border-nevoa bg-white p-5">
@@ -24,7 +24,8 @@ export default function CardServico({ servico }: Props) {
             </Link>
           </h3>
           <p className="mt-0.5 text-sm text-ardosia">
-            {categoria.nome} · {formatarDistancia(servico.distancia_m)} de você
+            {categoria.nome} · {servico.endereco_restrito ? 'cerca de ' : ''}
+            {formatarDistancia(servico.distancia_m)} de você
           </p>
         </div>
       </div>
@@ -39,19 +40,21 @@ export default function CardServico({ servico }: Props) {
         </li>
         <li className="flex items-center gap-2 text-ardosia">
           <Icone nome="local" tamanho={16} />
-          {servico.endereco}
+          {servico.endereco ?? `Endereço protegido · ${servico.cidade}. Ligue para combinar.`}
         </li>
       </ul>
 
       <div className="grid grid-cols-2 gap-2">
         {servico.telefone && (
-          <BotaoLink href={`tel:${servico.telefone}`} icone="telefone">
+          <BotaoLink href={`tel:${servico.telefone}`} icone="telefone" className={rota ? '' : 'col-span-2'}>
             Ligar
           </BotaoLink>
         )}
-        <BotaoLink href={rota} novaAba variante="suave" icone="rota" className={servico.telefone ? '' : 'col-span-2'}>
-          Como chegar
-        </BotaoLink>
+        {rota && (
+          <BotaoLink href={rota} novaAba variante="suave" icone="rota" className={servico.telefone ? '' : 'col-span-2'}>
+            Como chegar
+          </BotaoLink>
+        )}
       </div>
     </article>
   )

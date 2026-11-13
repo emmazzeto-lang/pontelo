@@ -1,7 +1,9 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import Icone from './Icone'
 import { Botao } from './Botao'
 import { cores } from '../estilos/cores'
+import { enviarDenuncia, ErroApi } from '../servicos/api'
 
 const motivos = [
   'O serviço fechou',
@@ -11,7 +13,7 @@ const motivos = [
   'Outro problema',
 ]
 
-export default function Denuncia() {
+export default function Denuncia({ servicoId }: { servicoId: string }) {
   const [aberto, setAberto] = useState(false)
   const [enviado, setEnviado] = useState(false)
 
@@ -29,17 +31,30 @@ export default function Denuncia() {
         Denunciar informação errada
       </button>
 
-      {aberto && <FormularioDenuncia aoEnviar={() => setEnviado(true)} />}
+      {aberto && <FormularioDenuncia servicoId={servicoId} aoEnviar={() => setEnviado(true)} />}
     </div>
   )
 }
 
-function FormularioDenuncia({ aoEnviar }: { aoEnviar: () => void }) {
+function mensagemDeFalha(erro: Error) {
+  if (erro instanceof ErroApi && erro.status === 429) return 'Muitas denúncias em pouco tempo. Espere alguns minutos e tente de novo.'
+  if (erro instanceof ErroApi && erro.codigo === 'SEM_CONEXAO') return 'Sem internet. Confira a conexão e tente de novo.'
+  return 'Não conseguimos enviar agora. Tente de novo em alguns minutos.'
+}
+
+function FormularioDenuncia({ servicoId, aoEnviar }: { servicoId: string; aoEnviar: () => void }) {
   const idDetalhes = useId()
   const idErro = useId()
   const [motivo, setMotivo] = useState('')
   const [detalhes, setDetalhes] = useState('')
   const [erro, setErro] = useState('')
+
+  // useMutation: o equivalente do useQuery para ENVIAR dados
+  const envio = useMutation({
+    mutationFn: () => enviarDenuncia(servicoId, motivo, detalhes),
+    onSuccess: aoEnviar,
+    onError: (falha) => setErro(mensagemDeFalha(falha)),
+  })
 
   function enviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault()
@@ -47,8 +62,8 @@ function FormularioDenuncia({ aoEnviar }: { aoEnviar: () => void }) {
       setErro('Escolha o que está errado.')
       return
     }
-    // Etapa 8: POST /servicos/{id}/denuncias
-    aoEnviar()
+    setErro('')
+    envio.mutate()
   }
 
   return (
@@ -98,7 +113,9 @@ function FormularioDenuncia({ aoEnviar }: { aoEnviar: () => void }) {
         </p>
       </div>
 
-      <Botao type="submit" className="justify-self-start">Enviar denúncia</Botao>
+      <Botao type="submit" className="justify-self-start" disabled={envio.isPending}>
+        {envio.isPending ? 'Enviando…' : 'Enviar denúncia'}
+      </Botao>
     </form>
   )
 }

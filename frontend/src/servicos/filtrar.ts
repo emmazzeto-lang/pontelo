@@ -8,7 +8,7 @@ export type Filtros = {
   soConferidos: boolean
 }
 
-function foiConferido(servico: Servico) {
+export function foiConferido(servico: Servico) {
   const data = servico.ultima_verificacao_em
   return data !== null && diasDesde(data) <= PRAZO_CONFERENCIA_DIAS
 }

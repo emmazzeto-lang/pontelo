@@ -19,6 +19,7 @@ const extras: Record<string, Extras> = {
   '7': { descricao: 'Orientação sobre benefícios sociais e acompanhamento de famílias.', cep: '01206000', documentos_exigidos: 'CPF e comprovante de endereço, se tiver.', horarios: deSegundaASexta('08:00', '16:00') },
   '8': { descricao: 'Emissão de RG, CPF, carteira de trabalho e segunda via.', cep: '04101000', documentos_exigidos: 'Certidão de nascimento ou casamento.', horarios: deSegundaASexta('09:00', '16:00') },
   '9': { descricao: 'Cozinha comunitária com almoço gratuito de segunda a sexta.', cep: '01139000', documentos_exigidos: null, horarios: deSegundaASexta('11:00', '13:00') },
+  '10': { descricao: 'Acolhimento sigiloso para mulheres em situação de violência e seus filhos. Ligue para combinar o atendimento.', cep: null, documentos_exigidos: null, horarios: [0, 1, 2, 3, 4, 5, 6].map((dia_semana) => ({ dia_semana, abre: '00:00', fecha: '23:59' })) },
 }
 
 // Na Etapa 8, isso será trocado por GET /servicos/{id}

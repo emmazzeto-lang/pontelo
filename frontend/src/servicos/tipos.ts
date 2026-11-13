@@ -1,4 +1,4 @@
-export type Categoria = 'abrigo' | 'refeicao' | 'juridico' | 'saude' | 'cras' | 'documentos'
+export type Categoria = 'abrigo' | 'refeitorio' | 'juridico' | 'saude' | 'cras' | 'documentos'
 
 // Mesmo formato da resposta de GET /servicos (seção 7 da documentação)
 export type Servico = {
@@ -8,10 +8,14 @@ export type Servico = {
   distancia_m: number
   aberto_agora: boolean
   horario_hoje: string
-  endereco: string
+  // Endereço restrito (abrigos para vítimas de violência): endereco e localizacao vêm null
+  endereco_restrito: boolean
+  endereco: string | null
+  cidade: string
+  uf: string
   telefone: string | null
   ultima_verificacao_em: string | null
-  localizacao: { lat: number; lng: number }
+  localizacao: { lat: number; lng: number } | null
 }
 
 export type Local =
@@ -30,11 +34,11 @@ export type Horario = {
   fecha: string
 }
 
-// Resposta de GET /servicos/{id}: tudo do serviço, mais os detalhes
-export type ServicoDetalhe = Servico & {
+// Resposta de GET /servicos/{id}: tudo do serviço, mais os detalhes.
+// Sem a posição de quem busca, a distância vem null.
+export type ServicoDetalhe = Omit<Servico, 'distancia_m'> & {
+  distancia_m: number | null
   descricao: string
-  cidade: string
-  uf: string
   cep: string | null
   documentos_exigidos: string | null
   horarios: Horario[]
