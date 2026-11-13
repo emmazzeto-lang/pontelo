@@ -19,10 +19,15 @@ export class ErroApi extends Error {
   }
 }
 
-async function pedir<T>(caminho: string): Promise<T> {
+async function pedir<T>(caminho: string, corpo?: unknown): Promise<T> {
   let resposta: Response
   try {
-    resposta = await fetch(`${URL_API}${caminho}`)
+    resposta = await fetch(
+      `${URL_API}${caminho}`,
+      corpo === undefined
+        ? undefined
+        : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) },
+    )
   } catch {
     throw new ErroApi(0, 'SEM_CONEXAO', 'Sem conexão com a internet.')
   }
@@ -85,4 +90,16 @@ export async function obterServico(id: string): Promise<ServicoDetalhe> {
 
   const resposta = await pedir<{ dados: ServicoDetalhe }>(`/servicos/${encodeURIComponent(id)}`)
   return resposta.dados
+}
+
+// POST /servicos/{id}/denuncias (anônimo)
+export async function enviarDenuncia(id: string, motivo: string, descricao: string) {
+  if (usarExemplos) {
+    await esperar(400)
+    return
+  }
+  await pedir(`/servicos/${encodeURIComponent(id)}/denuncias`, {
+    motivo,
+    ...(descricao.trim() && { descricao: descricao.trim() }),
+  })
 }

@@ -49,6 +49,8 @@ CREATE TABLE servicos (
     categoria_id           INT             NOT NULL REFERENCES categorias (id),
     organizacao_id         UUID            REFERENCES organizacoes (id) ON DELETE SET NULL,
     endereco               TEXT            NOT NULL,
+    -- Abrigos para vítimas de violência: a API pública esconde endereço, CEP e coordenadas
+    endereco_restrito      BOOLEAN         NOT NULL DEFAULT FALSE,
     cidade                 TEXT            NOT NULL,
     uf                     CHAR(2)         NOT NULL,
     cep                    CHAR(8),
@@ -146,8 +148,8 @@ LANGUAGE sql STABLE AS $$
     SELECT CASE
         WHEN ultima_verificacao IS NOT NULL
              AND ultima_verificacao >= now() - make_interval(days => prazo_dias)
-        THEN 'verde'
-        ELSE 'ambar'
+        THEN 'verificado'
+        ELSE 'a_confirmar'
     END;
 $$;
 
@@ -181,12 +183,14 @@ SELECT
     c.nome  AS categoria_nome,
     c.icone,
     c.cor,
-    s.endereco,
+    -- Endereço restrito: só a cidade e a UF continuam visíveis
+    CASE WHEN s.endereco_restrito THEN NULL ELSE s.endereco END AS endereco,
+    s.endereco_restrito,
     s.cidade,
     s.uf,
-    s.cep,
-    ST_Y(s.localizacao::geometry) AS latitude,
-    ST_X(s.localizacao::geometry) AS longitude,
+    CASE WHEN s.endereco_restrito THEN NULL ELSE s.cep END AS cep,
+    CASE WHEN s.endereco_restrito THEN NULL ELSE ST_Y(s.localizacao::geometry) END AS latitude,
+    CASE WHEN s.endereco_restrito THEN NULL ELSE ST_X(s.localizacao::geometry) END AS longitude,
     s.telefone,
     s.documentos_exigidos,
     s.ultima_verificacao_em,

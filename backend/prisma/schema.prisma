@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model categorias {
+  id       Int        @id @default(autoincrement())
+  slug     String     @unique @db.VarChar(60)
+  nome     String     @db.VarChar(100)
+  icone    String?    @db.VarChar(60)
+  cor      String?    @db.VarChar(20)
+  servicos servicos[]
+}
+
+model chaves_api {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id    String    @db.Uuid
+  nome          String    @db.VarChar(100)
+  hash_da_chave String    @unique
+  ativa         Boolean   @default(true)
+  ultimo_uso    DateTime? @db.Timestamptz(6)
+  criado_em     DateTime  @default(now()) @db.Timestamptz(6)
+  usuarios      usuarios  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([usuario_id], map: "idx_chaves_api_usuario")
+}
+
+model denuncias {
+  id                                         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  servico_id                                 String          @db.Uuid
+  usuario_id                                 String?         @db.Uuid
+  motivo                                     String          @db.VarChar(100)
+  descricao                                  String?
+  status                                     status_denuncia @default(aberta)
+  resolvido_por                              String?         @db.Uuid
+  criado_em                                  DateTime        @default(now()) @db.Timestamptz(6)
+  usuarios_denuncias_resolvido_porTousuarios usuarios?       @relation("denuncias_resolvido_porTousuarios", fields: [resolvido_por], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  servicos                                   servicos        @relation(fields: [servico_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuarios_denuncias_usuario_idTousuarios    usuarios?       @relation("denuncias_usuario_idTousuarios", fields: [usuario_id], references: [id], onUpdate: NoAction)
+
+  @@index([servico_id], map: "idx_denuncias_servico")
+  @@index([status], map: "idx_denuncias_status")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model horarios_funcionamento {
+  id         BigInt   @id @default(autoincrement())
+  servico_id String   @db.Uuid
+  dia_semana Int      @db.SmallInt
+  abre       DateTime @db.Time(6)
+  fecha      DateTime @db.Time(6)
+  servicos   servicos @relation(fields: [servico_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([servico_id, dia_semana], map: "idx_horarios_servico")
+}
+
+model organizacoes {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome           String
+  cnpj           String?    @unique @db.VarChar(18)
+  responsavel_id String     @db.Uuid
+  verificada     Boolean    @default(false)
+  usuarios       usuarios   @relation(fields: [responsavel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  servicos       servicos[]
+
+  @@index([responsavel_id], map: "idx_organizacoes_responsavel")
+}
+
+model refresh_tokens {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id String   @db.Uuid
+  token_hash String   @unique
+  expira_em  DateTime @db.Timestamptz(6)
+  revogado   Boolean  @default(false)
+  usuarios   usuarios @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([usuario_id], map: "idx_refresh_tokens_usuario")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model servicos {
+  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome                   String
+  descricao              String?
+  categoria_id           Int
+  organizacao_id         String?                  @db.Uuid
+  endereco               String
+  cidade                 String
+  uf                     String                   @db.Char(2)
+  cep                    String?                  @db.Char(8)
+  localizacao            Unsupported("geography")
+  telefone               String?
+  documentos_exigidos    String?
+  status                 status_servico           @default(pendente)
+  ultima_verificacao_em  DateTime?                @db.Timestamptz(6)
+  criado_por             String                   @db.Uuid
+  criado_em              DateTime                 @default(now()) @db.Timestamptz(6)
+  endereco_restrito      Boolean                  @default(false)
+  denuncias              denuncias[]
+  horarios_funcionamento horarios_funcionamento[]
+  categorias             categorias               @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios               usuarios                 @relation(fields: [criado_por], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  organizacoes           organizacoes?            @relation(fields: [organizacao_id], references: [id], onUpdate: NoAction)
+  verificacoes           verificacoes[]
+
+  @@index([categoria_id], map: "idx_servicos_categoria")
+  @@index([uf, cidade], map: "idx_servicos_cidade_uf")
+  @@index([criado_por], map: "idx_servicos_criado_por")
+  @@index([localizacao], map: "idx_servicos_localizacao", type: Gist)
+  @@index([organizacao_id], map: "idx_servicos_organizacao")
+  @@index([status], map: "idx_servicos_status")
+  @@index([ultima_verificacao_em], map: "idx_servicos_ultima_verif")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
+
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model usuarios {
+  id                                          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome                                        String
+  email                                       String
+  senha_hash                                  String
+  papel                                       papel_usuario    @default(colaborador)
+  criado_em                                   DateTime         @default(now()) @db.Timestamptz(6)
+  chaves_api                                  chaves_api[]
+  denuncias_denuncias_resolvido_porTousuarios denuncias[]      @relation("denuncias_resolvido_porTousuarios")
+  denuncias_denuncias_usuario_idTousuarios    denuncias[]      @relation("denuncias_usuario_idTousuarios")
+  organizacoes                                organizacoes[]
+  refresh_tokens                              refresh_tokens[]
+  servicos                                    servicos[]
+  verificacoes                                verificacoes[]
+}
+
+model verificacoes {
+  id         String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  servico_id String           @db.Uuid
+  usuario_id String           @db.Uuid
+  tipo       tipo_verificacao
+  resultado  String           @db.VarChar(30)
+  comentario String?
+  criado_em  DateTime         @default(now()) @db.Timestamptz(6)
+  servicos   servicos         @relation(fields: [servico_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuarios   usuarios         @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([servico_id, criado_em(sort: Desc)], map: "idx_verificacoes_servico")
+  @@index([usuario_id], map: "idx_verificacoes_usuario")
+}
+
+enum papel_usuario {
+  colaborador
+  organizacao
+  moderador
+}
+
+enum status_denuncia {
+  aberta
+  em_analise
+  resolvida
+  descartada
+}
+
+enum status_servico {
+  pendente
+  publicado
+  rejeitado
+  arquivado
+}
+
+enum tipo_verificacao {
+  confirmacao
+  moderacao
+}

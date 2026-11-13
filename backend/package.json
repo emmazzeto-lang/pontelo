@@ -4,13 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "prisma skills sync || exit 0"
+    "dev": "tsx watch --env-file=../.env src/servidor.ts",
+    "build": "tsc",
+    "start": "node --env-file=../.env dist/servidor.js",
+    "seed": "tsx --env-file=../.env prisma/seed.ts",
+    "test": "vitest run",
+    "verificar": "tsc --noEmit",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@fastify/cookie": "^11.1.5",
     "@fastify/cors": "^11.3.1",
@@ -19,14 +24,17 @@
     "@fastify/rate-limit": "^11.2.1",
     "@fastify/swagger": "^9.9.2",
     "@fastify/swagger-ui": "^6.1.2",
+    "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "argon2": "^0.45.1",
     "fastify": "^5.12.7",
+    "fastify-type-provider-zod": "^7.0.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
-    "prisma": "^8.0.0-rc.28",
+    "dotenv": "^18.0.10",
+    "prisma": "^7.10.1",
     "tsx": "^4.23.15",
     "typescript": "~5.9.3",
     "vitest": "^5.0.5"

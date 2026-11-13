@@ -46,7 +46,7 @@ export default function DetalheServico() {
 function Conteudo({ servico }: { servico: ServicoDetalhe }) {
   const [confirmado, setConfirmado] = useState(false)
   const categoria = categoriaPorSlug[servico.categoria]
-  const { lat, lng } = servico.localizacao
+  const rota = servico.localizacao ? linkDeRota(servico.localizacao.lat, servico.localizacao.lng) : null
 
   return (
     <div className="conteudo py-6 md:py-10">
@@ -55,7 +55,8 @@ function Conteudo({ servico }: { servico: ServicoDetalhe }) {
       <header className="mt-4">
         <p className="flex items-center gap-2 text-sm font-semibold text-ardosia">
           <Icone nome={categoria.icone} tamanho={20} cor={cores.marinho} destaque={cores.douradoEscuro} />
-          {categoria.nome} · {formatarDistancia(servico.distancia_m)} de você
+          {categoria.nome}
+          {servico.distancia_m !== null && ` · ${formatarDistancia(servico.distancia_m)} de você`}
         </p>
         <h1 className="mt-2 max-w-[22ch] text-[clamp(1.875rem,4.5vw,3rem)]">{servico.nome}</h1>
         <div className="mt-3">
@@ -71,9 +72,11 @@ function Conteudo({ servico }: { servico: ServicoDetalhe }) {
               Ligar
             </BotaoLink>
           )}
-          <BotaoLink href={linkDeRota(lat, lng)} novaAba variante="acao" icone="rota" tamanho="lg" larguraTotal>
-            Como chegar
-          </BotaoLink>
+          {rota && (
+            <BotaoLink href={rota} novaAba variante="acao" icone="rota" tamanho="lg" larguraTotal>
+              Como chegar
+            </BotaoLink>
+          )}
         </aside>
 
         <div className="lg:order-1">
@@ -110,7 +113,7 @@ function Conteudo({ servico }: { servico: ServicoDetalhe }) {
           </Secao>
 
           <div className="border-t border-nevoa pt-5">
-            <Denuncia />
+            <Denuncia servicoId={servico.id} />
           </div>
         </div>
       </div>
@@ -149,6 +152,18 @@ function Secao({ titulo, children }: { titulo: string; children: React.ReactNode
 function EnderecoComMapa({ servico }: { servico: ServicoDetalhe }) {
   const [verMapa, setVerMapa] = useState(false)
   const servicosNoMapa = useMemo(() => [servico], [servico])
+
+  // Abrigo com endereço sigiloso: só a cidade e o caminho para ligar
+  if (servico.endereco_restrito) {
+    return (
+      <p className="text-ardosia">
+        Por segurança de quem é atendido aqui, o endereço não é divulgado.
+        {servico.telefone ? ' Ligue para combinar o atendimento.' : ''}
+        <br />
+        {servico.cidade} – {servico.uf}
+      </p>
+    )
+  }
 
   return (
     <>
