@@ -90,3 +90,17 @@ export async function confirmar(servicoId: string, usuarioId: string) {
   const quando = await repositorio.criarConfirmacao(servicoId, usuarioId)
   return { dados: { ultima_verificacao_em: quando.toISOString() } }
 }
+
+// GET /dados/servicos.geojson: formato padrão de mapas, abre direto no QGIS, uMap, geojson.io...
+export async function exportarGeoJson() {
+  const linhas = await repositorio.servicosParaDadosAbertos()
+  return {
+    type: 'FeatureCollection' as const,
+    features: linhas.map(({ lat, lng, ultima_verificacao_em, ...propriedades }) => ({
+      type: 'Feature' as const,
+      // GeoJSON também usa longitude primeiro
+      geometry: { type: 'Point' as const, coordinates: [lng, lat] },
+      properties: { ...propriedades, ultima_verificacao_em: ultima_verificacao_em?.toISOString() ?? null },
+    })),
+  }
+}

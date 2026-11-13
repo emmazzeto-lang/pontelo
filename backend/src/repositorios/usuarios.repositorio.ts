@@ -39,3 +39,47 @@ export async function revogarRefresh(id: string) {
 export async function revogarTodos(usuarioId: string) {
   await banco.refresh_tokens.updateMany({ where: { usuario_id: usuarioId, revogado: false }, data: { revogado: true } })
 }
+
+// ---- Direitos do titular (LGPD, seção 8) ----
+
+export function buscarComSenha(id: string) {
+  return banco.usuarios.findUnique({ where: { id } })
+}
+
+// Tudo o que o Pontelo guarda sobre a pessoa, para ela baixar
+export function dadosDoTitular(id: string) {
+  return banco.usuarios.findUnique({
+    where: { id },
+    select: {
+      nome: true,
+      email: true,
+      papel: true,
+      criado_em: true,
+      servicos: { select: { nome: true, status: true, criado_em: true }, orderBy: { criado_em: 'asc' } },
+      verificacoes: {
+        where: { tipo: 'confirmacao' },
+        select: { criado_em: true, servicos: { select: { nome: true } } },
+        orderBy: { criado_em: 'asc' },
+      },
+      denuncias_denuncias_usuario_idTousuarios: { select: { motivo: true, criado_em: true } },
+    },
+  })
+}
+
+// Exclusão por anonimização: os serviços que a pessoa sugeriu continuam no mapa (ajudam outras pessoas),
+// mas nada mais aponta para quem ela é. Nome, e-mail e senha são trocados; sessões são apagadas.
+export async function anonimizar(id: string, senhaHashAleatoria: string) {
+  await banco.$transaction([
+    banco.refresh_tokens.deleteMany({ where: { usuario_id: id } }),
+    banco.denuncias.updateMany({ where: { usuario_id: id }, data: { usuario_id: null } }),
+    banco.usuarios.update({
+      where: { id },
+      data: {
+        nome: 'Conta excluída',
+        email: `excluida-${id}@pontelo.invalid`,
+        senha_hash: senhaHashAleatoria,
+        papel: 'colaborador',
+      },
+    }),
+  ])
+}

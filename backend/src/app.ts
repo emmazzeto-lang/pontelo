@@ -23,9 +23,11 @@ import { rotasPublicas } from './rotas/publicas.rotas.js'
 // Mensagens de validação em português
 z.config(z.locales.pt())
 
-export async function construirApp() {
+export async function construirApp({ registrarLogs = true } = {}) {
   const app = Fastify({
     logger: {
+      // Nos testes automatizados o log fica em silêncio
+      level: registrarLogs ? 'info' : 'silent',
       // Privacidade (seção 8): o log nunca guarda a query, onde vão lat, lng e CEP
       serializers: {
         req: (pedido) => ({ method: pedido.method, url: pedido.url.split('?')[0] }),
@@ -39,7 +41,7 @@ export async function construirApp() {
   // A interface do Swagger precisa carregar os próprios scripts, por isso o helmet libera só ela
   await app.register(helmet, { contentSecurityPolicy: false })
   // credentials: o navegador só manda o cookie de sessão para outra porta/domínio se o CORS permitir
-  await app.register(cors, { origin: config.FRONTEND_URL, credentials: true, methods: ['GET', 'POST', 'PATCH'] })
+  await app.register(cors, { origin: config.FRONTEND_URL, credentials: true, methods: ['GET', 'POST', 'PATCH', 'DELETE'] })
   await app.register(rateLimit, { max: 100, timeWindow: '1 minute' })
   await app.register(cookie)
   await app.register(jwt, { secret: config.JWT_SECRET })

@@ -25,7 +25,7 @@ export default function DetalheServico() {
 
   if (consulta.isPending) {
     return (
-      <div className="conteudo py-10">
+      <div className="conteudo min-h-screen py-10">
         <p role="status" className="text-ardosia">Carregando o serviço…</p>
       </div>
     )

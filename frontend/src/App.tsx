@@ -1,14 +1,21 @@
+import { lazy } from 'react'
 import { Routes, Route } from 'react-router'
 import Layout from './componentes/Layout'
 import Inicio from './paginas/Inicio'
-import Resultados from './paginas/Resultados'
-import DetalheServico from './paginas/DetalheServico'
-import NaoEncontrada from './paginas/NaoEncontrada'
-import Vitrine from './paginas/Vitrine'
-import Entrar from './paginas/Entrar'
-import CriarConta from './paginas/CriarConta'
-import Sugerir from './paginas/Sugerir'
-import Moderacao from './paginas/Moderacao'
+
+// A página inicial vem junto; as outras só são baixadas quando alguém abre (deixa o primeiro carregamento leve)
+const Resultados = lazy(() => import('./paginas/Resultados'))
+const DetalheServico = lazy(() => import('./paginas/DetalheServico'))
+const Entrar = lazy(() => import('./paginas/Entrar'))
+const CriarConta = lazy(() => import('./paginas/CriarConta'))
+const MinhaConta = lazy(() => import('./paginas/MinhaConta'))
+const Sugerir = lazy(() => import('./paginas/Sugerir'))
+const Moderacao = lazy(() => import('./paginas/Moderacao'))
+const ComoFunciona = lazy(() => import('./paginas/ComoFunciona'))
+const Organizacoes = lazy(() => import('./paginas/Organizacoes'))
+const DadosAbertos = lazy(() => import('./paginas/DadosAbertos'))
+const Privacidade = lazy(() => import('./paginas/Privacidade'))
+const NaoEncontrada = lazy(() => import('./paginas/NaoEncontrada'))
 
 export default function App() {
   return (
@@ -19,9 +26,13 @@ export default function App() {
         <Route path="servicos/:id" element={<DetalheServico />} />
         <Route path="entrar" element={<Entrar />} />
         <Route path="criar-conta" element={<CriarConta />} />
+        <Route path="minha-conta" element={<MinhaConta />} />
         <Route path="sugerir" element={<Sugerir />} />
         <Route path="moderacao" element={<Moderacao />} />
-        <Route path="vitrine" element={<Vitrine />} />
+        <Route path="como-funciona" element={<ComoFunciona />} />
+        <Route path="organizacoes" element={<Organizacoes />} />
+        <Route path="dados-abertos" element={<DadosAbertos />} />
+        <Route path="privacidade" element={<Privacidade />} />
         <Route path="*" element={<NaoEncontrada />} />
       </Route>
     </Routes>

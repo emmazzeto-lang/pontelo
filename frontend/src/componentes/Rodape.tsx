@@ -1,7 +1,11 @@
 import { Link } from 'react-router'
 import Logo from './Logo'
+import { URL_GEOJSON } from '../servicos/api'
 
-const colunas = [
+// "externo": arquivo da API (não é página do site), então usa <a> em vez de <Link>
+type LinkRodape = { para: string; texto: string; externo?: boolean }
+
+const colunas: { titulo: string; links: LinkRodape[] }[] = [
   {
     titulo: 'Plataforma',
     links: [
@@ -14,14 +18,14 @@ const colunas = [
     titulo: 'Dados',
     links: [
       { para: '/dados-abertos', texto: 'API pública' },
-      { para: '/dados-abertos', texto: 'Exportar GeoJSON' },
+      { para: URL_GEOJSON, texto: 'Baixar GeoJSON', externo: true },
     ],
   },
   {
     titulo: 'Transparência',
     links: [
       { para: '/privacidade', texto: 'Política de privacidade' },
-      { para: '/minha-conta', texto: 'Excluir minha conta' },
+      { para: '/minha-conta', texto: 'Baixar ou excluir meus dados' },
       { para: '/como-funciona', texto: 'Como conferimos os dados' },
     ],
   },
@@ -45,7 +49,11 @@ export default function Rodape() {
               <ul className="mt-3 space-y-2.5">
                 {coluna.links.map((link) => (
                   <li key={link.texto}>
-                    <Link to={link.para} className="hover:underline">{link.texto}</Link>
+                    {link.externo ? (
+                      <a href={link.para} className="hover:underline">{link.texto}</a>
+                    ) : (
+                      <Link to={link.para} className="hover:underline">{link.texto}</Link>
+                    )}
                   </li>
                 ))}
               </ul>
