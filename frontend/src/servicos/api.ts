@@ -1,42 +1,74 @@
 import { buscarDetalheExemplo } from '../dados/detalhesExemplo'
 import { servicosExemplo } from '../dados/servicosExemplo'
 import { filtrarServicos } from './filtrar'
+import { guardarSessao, limparSessao, obterToken, type Usuario } from './sessao'
 import type { Categoria, Local, Servico, ServicoDetalhe } from './tipos'
 
 const URL_API = import.meta.env.VITE_API_URL
 const usarExemplos = import.meta.env.VITE_USAR_EXEMPLOS === 'true'
 
-// Erro no formato da documentação: { "erro": { "codigo": "...", "mensagem": "..." } }
+export type DetalheErro = { campo: string; problema: string }
+
+// Erro no formato da documentação: { "erro": { "codigo": "...", "mensagem": "...", "detalhes"?: [...] } }
 export class ErroApi extends Error {
   status: number
   codigo: string
+  detalhes: DetalheErro[]
 
-  constructor(status: number, codigo: string, mensagem: string) {
+  constructor(status: number, codigo: string, mensagem: string, detalhes: DetalheErro[] = []) {
     super(mensagem)
     this.name = 'ErroApi'
     this.status = status
     this.codigo = codigo
+    this.detalhes = detalhes
   }
 }
 
-async function pedir<T>(caminho: string, corpo?: unknown): Promise<T> {
+type Opcoes = {
+  corpo?: unknown
+  metodo?: 'GET' | 'POST'
+  // Rotas /auth: o navegador precisa mandar e receber o cookie de sessão
+  comCookie?: boolean
+}
+
+async function pedir<T>(caminho: string, opcoes: Opcoes = {}, jaRenovou = false): Promise<T> {
+  const { corpo, metodo = corpo === undefined ? 'GET' : 'POST', comCookie = false } = opcoes
+  const token = obterToken()
+
+  const cabecalhos: Record<string, string> = {}
+  if (corpo !== undefined) cabecalhos['Content-Type'] = 'application/json'
+  if (token) cabecalhos.Authorization = `Bearer ${token}`
+
   let resposta: Response
   try {
-    resposta = await fetch(
-      `${URL_API}${caminho}`,
-      corpo === undefined
-        ? undefined
-        : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) },
-    )
+    resposta = await fetch(`${URL_API}${caminho}`, {
+      method: metodo,
+      headers: cabecalhos,
+      body: corpo === undefined ? undefined : JSON.stringify(corpo),
+      credentials: comCookie ? 'include' : 'same-origin',
+    })
   } catch {
     throw new ErroApi(0, 'SEM_CONEXAO', 'Sem conexão com a internet.')
   }
 
-  if (!resposta.ok) {
-    const corpo = (await resposta.json().catch(() => null)) as { erro?: { codigo: string; mensagem: string } } | null
-    throw new ErroApi(resposta.status, corpo?.erro?.codigo ?? 'ERRO', corpo?.erro?.mensagem ?? 'Algo deu errado.')
+  // O token de acesso vale 15 minutos. Se venceu, renova uma vez pelo cookie e repete o pedido.
+  if (resposta.status === 401 && token && !comCookie && !jaRenovou) {
+    if (await renovarSessao()) return pedir<T>(caminho, opcoes, true)
   }
 
+  if (!resposta.ok) {
+    const erro = (await resposta.json().catch(() => null)) as {
+      erro?: { codigo: string; mensagem: string; detalhes?: DetalheErro[] }
+    } | null
+    throw new ErroApi(
+      resposta.status,
+      erro?.erro?.codigo ?? 'ERRO',
+      erro?.erro?.mensagem ?? 'Algo deu errado.',
+      erro?.erro?.detalhes,
+    )
+  }
+
+  if (resposta.status === 204) return undefined as T
   return resposta.json() as Promise<T>
 }
 
@@ -99,7 +131,106 @@ export async function enviarDenuncia(id: string, motivo: string, descricao: stri
     return
   }
   await pedir(`/servicos/${encodeURIComponent(id)}/denuncias`, {
-    motivo,
-    ...(descricao.trim() && { descricao: descricao.trim() }),
+    corpo: { motivo, ...(descricao.trim() && { descricao: descricao.trim() }) },
   })
+}
+
+// POST /servicos/{id}/confirmacoes (exige login)
+export async function confirmarServico(id: string): Promise<string> {
+  if (usarExemplos) {
+    await esperar(400)
+    return new Date().toISOString()
+  }
+  const resposta = await pedir<{ dados: { ultima_verificacao_em: string } }>(
+    `/servicos/${encodeURIComponent(id)}/confirmacoes`,
+    { metodo: 'POST' },
+  )
+  return resposta.dados.ultima_verificacao_em
+}
+
+// ---------------- Conta ----------------
+
+type RespostaSessao = { dados: { usuario: Usuario; token_acesso: string } }
+
+const usuarioExemplo: Usuario = { id: 'exemplo', nome: 'Pessoa de Exemplo', email: 'exemplo@pontelo.test', papel: 'colaborador' }
+
+// POST /auth/login
+export async function entrar(email: string, senha: string) {
+  if (usarExemplos) {
+    await esperar(400)
+    guardarSessao({ ...usuarioExemplo, email }, 'exemplo')
+    return
+  }
+  const { dados } = await pedir<RespostaSessao>('/auth/login', { corpo: { email, senha }, comCookie: true })
+  guardarSessao(dados.usuario, dados.token_acesso)
+}
+
+// POST /auth/registro (a API já devolve a pessoa logada)
+export async function cadastrar(nome: string, email: string, senha: string) {
+  if (usarExemplos) {
+    await esperar(400)
+    guardarSessao({ ...usuarioExemplo, nome, email }, 'exemplo')
+    return
+  }
+  const { dados } = await pedir<RespostaSessao>('/auth/registro', {
+    corpo: { nome, email, senha, aceite_privacidade: true },
+    comCookie: true,
+  })
+  guardarSessao(dados.usuario, dados.token_acesso)
+}
+
+// POST /auth/logout
+export async function sair() {
+  // Sai na tela primeiro: mesmo sem internet, a pessoa não continua logada neste aparelho
+  limparSessao()
+  if (usarExemplos) return
+  await pedir('/auth/logout', { metodo: 'POST', comCookie: true }).catch(() => undefined)
+}
+
+// Saída rápida: a página vai ser trocada AGORA, então não dá para esperar resposta.
+// sendBeacon entrega o pedido mesmo com a página fechando, e a sessão não fica aberta no aparelho.
+export function sairSemEsperar() {
+  if (usarExemplos || !obterToken()) return
+  try {
+    navigator.sendBeacon(`${URL_API}/auth/logout`)
+  } catch {
+    // Sem sendBeacon: segue a saída mesmo assim
+  }
+}
+
+// POST /auth/refresh. Cada cookie só vale UMA vez (a API troca a cada uso), então:
+// - dentro da aba, pedidos simultâneos dividem a mesma renovação;
+// - entre abas, a trava do navegador (Web Locks) faz uma esperar a outra.
+let renovacaoEmAndamento: Promise<boolean> | null = null
+
+export function renovarSessao(): Promise<boolean> {
+  renovacaoEmAndamento ??= executarRenovacao().finally(() => {
+    renovacaoEmAndamento = null
+  })
+  return renovacaoEmAndamento
+}
+
+async function executarRenovacao() {
+  const tentar = async () => {
+    try {
+      const { dados } = await pedir<RespostaSessao>('/auth/refresh', { metodo: 'POST', comCookie: true }, true)
+      guardarSessao(dados.usuario, dados.token_acesso)
+      return true
+    } catch (erro) {
+      // Quem já estava logado e ficou sem internet continua logado; sessão inválida, não
+      const semInternet = erro instanceof ErroApi && erro.codigo === 'SEM_CONEXAO'
+      if (!(semInternet && obterToken())) limparSessao()
+      return false
+    }
+  }
+  return navigator.locks ? navigator.locks.request('pontelo-sessao', tentar) : tentar()
+}
+
+// Chamado uma vez ao abrir o site: se houver cookie de sessão, a pessoa continua logada
+export function restaurarSessao() {
+  if (usarExemplos) {
+    limparSessao()
+    return
+  }
+  void renovarSessao()
 }

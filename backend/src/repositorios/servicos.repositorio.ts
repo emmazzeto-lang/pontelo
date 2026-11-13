@@ -96,3 +96,24 @@ export async function criarDenuncia(servicoId: string, motivo: string, descricao
 export async function listarCategorias() {
   return banco.categorias.findMany({ select: { slug: true, nome: true }, orderBy: { id: 'asc' } })
 }
+
+// Já confirmou este serviço nas últimas 24 horas?
+export async function confirmouRecentemente(servicoId: string, usuarioId: string) {
+  const total = await banco.verificacoes.count({
+    where: {
+      servico_id: servicoId,
+      usuario_id: usuarioId,
+      tipo: 'confirmacao',
+      criado_em: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    },
+  })
+  return total > 0
+}
+
+// O gatilho trg_verificacoes_atualiza_servico (schema.sql) atualiza servicos.ultima_verificacao_em sozinho
+export async function criarConfirmacao(servicoId: string, usuarioId: string) {
+  const verificacao = await banco.verificacoes.create({
+    data: { servico_id: servicoId, usuario_id: usuarioId, tipo: 'confirmacao', resultado: 'confirmado' },
+  })
+  return verificacao.criado_em
+}

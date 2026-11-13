@@ -78,3 +78,15 @@ export async function denunciar(id: string, motivo: string, descricao?: string) 
   }
   await repositorio.criarDenuncia(id, motivo, descricao?.trim() || null)
 }
+
+// "Confirmo que ainda funciona": uma vez por pessoa, por serviço, a cada 24 horas
+export async function confirmar(servicoId: string, usuarioId: string) {
+  if (!(await repositorio.existePublicado(servicoId))) {
+    throw new ErroApi(404, 'NAO_ENCONTRADO', 'Serviço não encontrado.')
+  }
+  if (await repositorio.confirmouRecentemente(servicoId, usuarioId)) {
+    throw new ErroApi(409, 'CONFIRMACAO_RECENTE', 'Você já confirmou este serviço nas últimas 24 horas. Obrigado!')
+  }
+  const quando = await repositorio.criarConfirmacao(servicoId, usuarioId)
+  return { dados: { ultima_verificacao_em: quando.toISOString() } }
+}

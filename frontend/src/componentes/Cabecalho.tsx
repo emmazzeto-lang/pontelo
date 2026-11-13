@@ -1,8 +1,10 @@
-import { Link, NavLink } from 'react-router'
+import { Link, NavLink, useLocation } from 'react-router'
 import Logo from './Logo'
 import Icone from './Icone'
 import BotaoSaidaRapida from './BotaoSaidaRapida'
 import { cores } from '../estilos/cores'
+import { sair } from '../servicos/api'
+import { useSessao } from '../servicos/sessao'
 
 const links = [
   { para: '/servicos', texto: 'Buscar serviços' },
@@ -37,10 +39,7 @@ export default function Cabecalho() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Link to="/entrar" className="inline-flex min-h-11 items-center gap-2 rounded-[10px] px-3 font-semibold hover:bg-azul-claro">
-            <Icone nome="usuario" tamanho={20} cor={cores.marinho} destaque={cores.douradoEscuro} />
-            Entrar
-          </Link>
+          <Conta />
           <Link
             to="/sugerir"
             className="inline-flex min-h-12 items-center gap-2.5 rounded-full bg-azul pl-3 pr-5 font-titulo font-extrabold text-white transition hover:bg-azul-hover"
@@ -57,5 +56,45 @@ export default function Cabecalho() {
         </div>
       </div>
     </header>
+  )
+}
+
+// "Entrar" para quem não está logado; primeiro nome e "Sair" para quem está
+function Conta() {
+  const sessao = useSessao()
+  const { pathname } = useLocation()
+
+  if (sessao.status === 'logado') {
+    const primeiroNome = sessao.usuario.nome.split(' ')[0]
+    return (
+      <div className="flex items-center gap-1">
+        <span className="inline-flex items-center gap-2 px-2 font-semibold">
+          <Icone nome="usuario" tamanho={20} cor={cores.marinho} destaque={cores.douradoEscuro} />
+          {primeiroNome}
+        </span>
+        <button
+          type="button"
+          onClick={() => void sair()}
+          className="inline-flex min-h-11 items-center rounded-[10px] px-3 font-medium text-ardosia underline-offset-4 hover:bg-azul-claro hover:underline"
+        >
+          Sair
+        </button>
+      </div>
+    )
+  }
+
+  // Enquanto confere a sessão, guarda o espaço para o cabeçalho não "pular"
+  return (
+    <Link
+      to="/entrar"
+      // Volta para esta página depois de entrar
+      state={{ de: pathname }}
+      aria-hidden={sessao.status === 'carregando' || undefined}
+      tabIndex={sessao.status === 'carregando' ? -1 : undefined}
+      className={`inline-flex min-h-11 items-center gap-2 rounded-[10px] px-3 font-semibold hover:bg-azul-claro ${sessao.status === 'carregando' ? 'invisible' : ''}`}
+    >
+      <Icone nome="usuario" tamanho={20} cor={cores.marinho} destaque={cores.douradoEscuro} />
+      Entrar
+    </Link>
   )
 }

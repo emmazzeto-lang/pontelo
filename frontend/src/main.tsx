@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ErroApi } from './servicos/api'
+import { ErroApi, restaurarSessao } from './servicos/api'
 
 import '@fontsource/inter/400.css'
 import '@fontsource/inter/500.css'
@@ -26,6 +26,9 @@ const clienteConsultas = new QueryClient({
     },
   },
 })
+
+// Fora de componente: roda uma vez só, mesmo no StrictMode (que monta tudo duas vezes)
+restaurarSessao()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
