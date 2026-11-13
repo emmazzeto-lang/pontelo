@@ -12,6 +12,7 @@ const colunas: { titulo: string; links: LinkRodape[] }[] = [
       { para: '/servicos', texto: 'Buscar serviços' },
       { para: '/sugerir', texto: 'Sugerir serviço' },
       { para: '/organizacoes', texto: 'Para organizações' },
+      { para: '/modo-discreto', texto: 'Modo discreto' },
     ],
   },
   {

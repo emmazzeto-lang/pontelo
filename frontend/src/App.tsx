@@ -15,6 +15,9 @@ const ComoFunciona = lazy(() => import('./paginas/ComoFunciona'))
 const Organizacoes = lazy(() => import('./paginas/Organizacoes'))
 const DadosAbertos = lazy(() => import('./paginas/DadosAbertos'))
 const Privacidade = lazy(() => import('./paginas/Privacidade'))
+const ModoDiscreto = lazy(() => import('./paginas/ModoDiscreto'))
+const ConfirmarContato = lazy(() => import('./paginas/Contato').then((m) => ({ default: m.ConfirmarContato })))
+const SairComoContato = lazy(() => import('./paginas/Contato').then((m) => ({ default: m.SairComoContato })))
 const NaoEncontrada = lazy(() => import('./paginas/NaoEncontrada'))
 
 export default function App() {
@@ -33,6 +36,9 @@ export default function App() {
         <Route path="organizacoes" element={<Organizacoes />} />
         <Route path="dados-abertos" element={<DadosAbertos />} />
         <Route path="privacidade" element={<Privacidade />} />
+        <Route path="modo-discreto" element={<ModoDiscreto />} />
+        <Route path="contato/confirmar" element={<ConfirmarContato />} />
+        <Route path="contato/sair" element={<SairComoContato />} />
         <Route path="*" element={<NaoEncontrada />} />
       </Route>
     </Routes>

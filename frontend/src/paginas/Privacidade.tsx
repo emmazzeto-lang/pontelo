@@ -68,6 +68,17 @@ export default function Privacidade() {
         </p>
       </Topico>
 
+      <Topico titulo="Modo discreto (calculadora)">
+        <p>
+          Os contatos de confiança e os códigos secretos ficam guardados só no seu celular. Quando você envia um
+          alerta, o servidor repassa o e-mail aos contatos e não grava quem pediu ajuda, para quem, nem a localização.
+        </p>
+        <p>
+          Para evitar spam, guardamos apenas uma “impressão” embaralhada (hash) dos e-mails que aceitaram ser contato
+          de confiança. Cada contato pode deixar de receber alertas pelo link no fim de qualquer e-mail.
+        </p>
+      </Topico>
+
       <Topico titulo="Seus direitos">
         <p>
           Em <Link to="/minha-conta" className={link}>Minha conta</Link> você pode, a qualquer momento:

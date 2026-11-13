@@ -15,6 +15,7 @@ import {
 import { z } from 'zod'
 import { config } from './config.js'
 import { ErroApi } from './erros.js'
+import { rotasAlerta } from './rotas/alerta.rotas.js'
 import { rotasAuth } from './rotas/auth.rotas.js'
 import { rotasColaboracao } from './rotas/colaboracao.rotas.js'
 import { rotasModeracao } from './rotas/moderacao.rotas.js'
@@ -100,6 +101,7 @@ export async function construirApp({ registrarLogs = true } = {}) {
   await app.register(rotasAuth, { prefix: '/api/v1' })
   await app.register(rotasColaboracao, { prefix: '/api/v1' })
   await app.register(rotasModeracao, { prefix: '/api/v1' })
+  await app.register(rotasAlerta, { prefix: '/api/v1' })
 
   return app
 }

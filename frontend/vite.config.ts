@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
@@ -26,4 +27,13 @@ function preCarregarFontes(): Plugin {
 export default defineConfig({
   envDir: '..',
   plugins: [react(), tailwindcss(), preCarregarFontes()],
+  build: {
+    // Dois "apps" no mesmo site: o Pontelo e a calculadora do modo discreto (com HTML, ícone e nome próprios)
+    rollupOptions: {
+      input: {
+        pontelo: resolve(import.meta.dirname, 'index.html'),
+        calculadora: resolve(import.meta.dirname, 'calculadora.html'),
+      },
+    },
+  },
 })

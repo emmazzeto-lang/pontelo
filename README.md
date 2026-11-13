@@ -13,6 +13,8 @@
 | Moderação | Aprovar ou rejeitar sugestões; tratar denúncias; tirar serviço do ar |
 | Pesquisadores e outros sites | API pública de leitura e exportação em GeoJSON |
 
+**Modo discreto:** em `/modo-discreto`, a pessoa instala no celular uma calculadora que funciona de verdade (nome e ícone de "Calculadora"). Um código secreto seguido de `=` envia por e-mail um pedido de ajuda com a localização para até 3 contatos de confiança; outro código abre o Pontelo. A tela não muda (se o envio falhar, aparece "Erro"), e a saída rápida do Pontelo volta para a calculadora. Os contatos ficam só no celular; cada um precisa aceitar por e-mail antes de receber alertas. **Não substitui o 190.**
+
 **Proteção de quem busca ajuda:** botão de saída rápida (ou tecla Esc), nenhuma localização gravada no servidor ou no endereço da página, e endereço sigiloso para abrigos de vítimas de violência (sem endereço, sem marcador no mapa e distância arredondada).
 
 ## Tecnologias
@@ -66,6 +68,8 @@ npm run dev
 O `seed` cria 10 serviços fictícios em São Paulo e a conta de moderação (`SEED_EMAIL_MODERADOR` / `SEED_SENHA_MODERADOR`). Pode rodar de novo quando quiser: ele recria os serviços de exemplo.
 
 A API sobe em `http://localhost:3000`, com documentação interativa em **http://localhost:3000/docs**.
+
+Os e-mails do modo discreto (convites e alertas) não saem para a internet em desenvolvimento: aparecem no **Mailpit**, em **http://localhost:8025**. Para enviar de verdade, troque as variáveis `SMTP_*` do `.env` pelas de um provedor de e-mail.
 
 ### 4. Front-end
 
@@ -137,6 +141,7 @@ Todas as rotas começam com `/api/v1`. Lista completa, com exemplos, em `/docs`.
 | `POST /auth/registro`, `/auth/login`, `/auth/refresh`, `/auth/logout` | Pública |
 | `GET /me`, `GET /me/dados`, `DELETE /me` | Com login |
 | `POST /servicos`, `POST /servicos/{id}/confirmacoes` | Com login |
+| `POST /alerta`, `/alerta/contatos/...` | Pública, sem conta (modo discreto; só envia para contatos que aceitaram) |
 | `/moderacao/...` | Só moderação |
 
 Erros sempre no mesmo formato: `{ "erro": { "codigo": "...", "mensagem": "...", "detalhes": [...] } }`.
@@ -157,4 +162,5 @@ Erros sempre no mesmo formato: `{ "erro": { "codigo": "...", "mensagem": "...", 
 
 - A moderação ainda não edita um serviço publicado; ela pode tirá-lo do ar ou tratar a denúncia.
 - Chaves de API, painel de organização, modo offline e estatísticas ficaram para versões futuras.
-- O "modo discreto" (aplicativo disfarçado, RF15) está descrito como proposta, não implementado.
+- O modo discreto envia o alerta por e-mail, que pode atrasar ou cair no spam. SMS ou WhatsApp exigiriam um provedor pago.
+- A calculadora é instalada pelo navegador, então o site do Pontelo fica no histórico até a pessoa apagá-lo.

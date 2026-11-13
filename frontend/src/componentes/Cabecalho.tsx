@@ -108,6 +108,9 @@ function MenuCompacto({ id }: { id: string }) {
             </li>
           )}
           <li>
+            <NavLink to="/modo-discreto" className={(estado) => `${item} ${classeLinkAtivo(estado)}`}>Modo discreto</NavLink>
+          </li>
+          <li>
             <NavLink to="/privacidade" className={(estado) => `${item} ${classeLinkAtivo(estado)}`}>Privacidade</NavLink>
           </li>
         </ul>
