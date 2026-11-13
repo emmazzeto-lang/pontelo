@@ -19,10 +19,8 @@ export type NovoServico = {
   criadoPor: string
 }
 
-// Horário "HH:MM" vira a data que o Prisma usa para colunas TIME
 const paraTime = (hora: string) => new Date(`1970-01-01T${hora}:00Z`)
 
-// Serviço e horários juntos numa transação: ou entra tudo, ou nada
 export async function criarServicoPendente(s: NovoServico) {
   return banco.$transaction(async (tx) => {
     const [criado] = await tx.$queryRaw<{ id: string }[]>`
@@ -68,7 +66,6 @@ export type LinhaModeracao = {
   denuncias_abertas: number
 }
 
-// A moderação vê o endereço completo, inclusive o restrito: precisa conferir se o lugar existe
 export function listarPorStatus(status: status_servico) {
   return banco.$queryRaw<LinhaModeracao[]>`
     SELECT s.id, s.nome, c.slug AS categoria, s.descricao, s.endereco, s.endereco_restrito, s.cidade, s.uf,
@@ -88,14 +85,12 @@ export function statusDoServico(id: string) {
   return banco.servicos.findUnique({ where: { id }, select: { status: true } })
 }
 
-// Muda o status e deixa registrado quem decidiu e por quê (tabela verificacoes, tipo "moderacao")
 export async function decidir(id: string, novoStatus: status_servico, moderadorId: string, motivo: string | null) {
   await banco.$transaction([
     banco.servicos.update({
       where: { id },
       data: {
         status: novoStatus,
-        // Publicar = a moderação acabou de conferir, então o selo começa como "Conferido hoje"
         ...(novoStatus === 'publicado' && { ultima_verificacao_em: new Date() }),
       },
     }),

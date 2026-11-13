@@ -4,19 +4,9 @@ import { ErroApi } from '../erros.js'
 import { enviarEmail, escaparHtml } from '../plugins/email.js'
 import * as repositorio from '../repositorios/alerta.repositorio.js'
 
-// ---------------------------------------------------------------------------------------------
-// Modo discreto: a calculadora manda um pedido de ajuda por e-mail para contatos de confiança.
-// O servidor NÃO guarda quem pediu ajuda, nem a localização, nem a lista de contatos de ninguém:
-// os contatos ficam no celular da pessoa. O banco só guarda o hash dos e-mails que aceitaram
-// receber alertas, para o Pontelo não virar ferramenta de spam.
-// ---------------------------------------------------------------------------------------------
-
 const segredo = (finalidade: string) => createHmac('sha256', config.REFRESH_TOKEN_SECRET).update(finalidade).digest()
 
-// Impressão do e-mail: dá para conferir "este e-mail aceitou?" sem guardar o e-mail
 const hashEmail = (email: string) => createHmac('sha256', segredo('contato-alerta')).update(email).digest('hex')
-
-// ---- Tokens dos links do e-mail (confirmar e sair). Assinados, com prazo, sem guardar nada no banco ----
 
 type Finalidade = 'confirmar' | 'sair'
 
@@ -45,15 +35,12 @@ function conferir(token: string, finalidade: Finalidade) {
   return conteudo.email
 }
 
-// O token vai depois do "#": essa parte do endereço nunca é enviada a servidor nenhum (nem aparece em log)
 const linkSair = (email: string) => `${config.FRONTEND_URL}/contato/sair#${assinar(email, 'sair', 365)}`
 
 const rodape = (email: string) => ({
   texto: `\n\nNão quer mais receber alertas de ninguém pelo Pontelo? ${linkSair(email)}`,
   html: `<p style="margin-top:32px;font-size:13px;color:#4a5a6e">Não quer mais receber alertas de ninguém pelo Pontelo? <a href="${linkSair(email)}">Parar de receber</a></p>`,
 })
-
-// ---- 1. Convite: a pessoa cadastra um contato no celular, e ele recebe um e-mail para aceitar ----
 
 export async function convidar(email: string, apelido: string) {
   const link = `${config.FRONTEND_URL}/contato/confirmar#${assinar(email, 'confirmar', 7)}`
@@ -89,13 +76,10 @@ export async function sair(token: string) {
   await repositorio.remover(hashEmail(conferir(token, 'sair')))
 }
 
-// O celular pergunta quais contatos já aceitaram, para mostrar "aguardando" ou "confirmado"
 export async function situacao(emails: string[]) {
   const confirmados = await repositorio.confirmados(emails.map(hashEmail))
   return emails.map((email) => ({ email, confirmado: confirmados.has(hashEmail(email)) }))
 }
-
-// ---- 2. O alerta ----
 
 type PedidoAlerta = {
   apelido: string
@@ -148,7 +132,6 @@ function montarAlerta(p: PedidoAlerta, email: string) {
 }
 
 export async function enviarAlerta(p: PedidoAlerta) {
-  // Só para quem aceitou: assim ninguém usa o Pontelo para mandar e-mail a desconhecidos
   const confirmados = await repositorio.confirmados(p.contatos.map(hashEmail))
   const destinatarios = p.contatos.filter((email) => confirmados.has(hashEmail(email)))
 

@@ -27,7 +27,6 @@ function criarMarcador(nome: NomeIcone) {
   })
 }
 
-// Criados uma vez só, quando o mapa é carregado
 export const marcadorPorCategoria = Object.fromEntries(
   categorias.map((c) => [c.slug, criarMarcador(c.icone)]),
 ) as Record<Categoria, L.DivIcon>

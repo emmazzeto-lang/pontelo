@@ -13,16 +13,13 @@ export default function Calculadora() {
     if (!preferencias) return
     try {
       await enviarAlerta({ apelido: preferencias.apelido, contatos: preferencias.contatos.map((c) => c.email) })
-      // Deu certo: nada muda na tela. Para quem está olhando, foi só uma conta.
     } catch {
-      // Deu errado: "Erro", como qualquer calculadora mostraria. Quem sabe do código entende o recado.
       setEstado(conta.mostrarErro)
     }
   }, [])
 
   const apertarIgual = useCallback(() => {
     const preferencias = lerPreferencias()
-    // Lê o estado aqui (e não dentro do setState), para o alerta sair uma vez só
     const codigo = conta.codigoDigitado(estado)
 
     if (preferencias && codigo === preferencias.codigoAbrir) {
@@ -37,7 +34,6 @@ export default function Calculadora() {
     setEstado(conta.igual)
   }, [estado, pedirSocorro])
 
-  // Teclado do computador também funciona (útil para demonstrar)
   useEffect(() => {
     const operadores: Record<string, conta.Operador> = { '+': '+', '-': '−', '*': '×', x: '×', '/': '÷' }
     function aoTeclar(evento: KeyboardEvent) {

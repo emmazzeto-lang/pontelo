@@ -7,7 +7,6 @@ import type { Horario } from './horarios.js'
 
 type Sugestao = Omit<repositorio.NovoServico, 'lat' | 'lng' | 'criadoPor'>
 
-// Acha o ponto no mapa: primeiro pelo endereço completo (mais preciso), depois pelo CEP
 async function localizar(s: Sugestao) {
   try {
     return await geocodificar({ q: `${s.endereco}, ${s.cidade}, ${s.uf}, Brasil` })
@@ -24,7 +23,6 @@ async function localizar(s: Sugestao) {
   throw new ErroApi(422, 'ENDERECO_NAO_ENCONTRADO', 'Não achamos esse endereço no mapa. Confira a rua, o número e a cidade.')
 }
 
-// Dois intervalos no mesmo dia não podem se sobrepor (ex.: 8h–12h e 11h–14h)
 function conferirHorarios(horarios: Horario[]) {
   const minutos = (h: string) => Number(h.slice(0, 2)) * 60 + Number(h.slice(3, 5))
   for (let dia = 0; dia <= 6; dia++) {
@@ -62,7 +60,6 @@ export async function fila(status: status_servico) {
 
 type Decisao = 'publicar' | 'rejeitar' | 'arquivar'
 
-// Que decisão vale para cada status atual, e para onde ela leva
 const transicoes: Record<Decisao, { de: status_servico[]; para: status_servico }> = {
   publicar: { de: ['pendente', 'arquivado'], para: 'publicado' },
   rejeitar: { de: ['pendente'], para: 'rejeitado' },

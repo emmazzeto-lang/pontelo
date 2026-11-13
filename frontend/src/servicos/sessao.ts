@@ -1,8 +1,5 @@
 import { useSyncExternalStore } from 'react'
 
-// Quem está logado. Fica SÓ na memória: nada em localStorage, onde qualquer script da página leria.
-// Ao recarregar, a sessão volta pelo cookie HttpOnly (veja restaurarSessao em api.ts).
-
 export type Usuario = {
   id: string
   nome: string
@@ -44,7 +41,6 @@ function assinar(ouvinte: () => void) {
   return () => ouvintes.delete(ouvinte)
 }
 
-// Hook: qualquer componente que usar é redesenhado quando a pessoa entra ou sai
 export function useSessao() {
   return useSyncExternalStore(assinar, () => estado)
 }

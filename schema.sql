@@ -210,9 +210,7 @@ INSERT INTO categorias (slug, nome, icone, cor) VALUES
     ('documentos',  'Documentos',   'file-text',   '#16A085')
 ON CONFLICT (slug) DO NOTHING;
 
--- Modo discreto: e-mails que aceitaram ser contato de confiança.
--- Guarda só o hash (HMAC) do e-mail: o banco não sabe quem são os contatos nem quem os cadastrou.
--- Os contatos ficam no celular de quem pede ajuda; aqui só fica o "sim, aceito receber alertas".
+-- Modo discreto: armazena apenas o hash (HMAC) dos e-mails que aceitaram receber alertas.
 CREATE TABLE IF NOT EXISTS contatos_alerta (
     email_hash     TEXT        PRIMARY KEY,
     confirmado_em  TIMESTAMPTZ NOT NULL DEFAULT now()

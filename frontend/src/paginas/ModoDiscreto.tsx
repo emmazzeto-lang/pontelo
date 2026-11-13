@@ -26,7 +26,6 @@ export default function ModoDiscreto() {
   const [apelido, setApelido] = useState(rascunho?.apelido ?? '')
   const [contatos, setContatos] = useState<Contato[]>(rascunho?.contatos ?? [])
 
-  // Guarda apelido e contatos assim que mudam (a ativação de verdade só acontece no "Salvar")
   useEffect(() => {
     if (apelido || contatos.length > 0) salvarRascunho({ apelido, contatos })
   }, [apelido, contatos])
@@ -280,7 +279,6 @@ function PermissaoLocalizacao() {
     'geolocation' in navigator ? 'prompt' : 'indisponivel',
   )
 
-  // Confere se a permissão já foi dada antes (e acompanha se a pessoa mudar nas configurações)
   useEffect(() => {
     navigator.permissions
       ?.query({ name: 'geolocation' })

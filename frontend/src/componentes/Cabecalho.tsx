@@ -20,7 +20,6 @@ const classeLinkAtivo = ({ isActive }: { isActive: boolean }) =>
 export default function Cabecalho() {
   const idMenu = useId()
   const { pathname } = useLocation()
-  // Guarda em qual página o menu foi aberto: ao trocar de página, ele conta como fechado sozinho
   const [abertoEm, setAbertoEm] = useState<string | null>(null)
   const menuAberto = abertoEm === pathname
 
@@ -29,7 +28,6 @@ export default function Cabecalho() {
       <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-4 py-3 md:py-4">
         <Logo />
 
-        {/* Telas grandes: tudo à vista */}
         <nav aria-label="Principal" className="hidden lg:block">
           <ul className="flex gap-8">
             {links.map((link) => (
@@ -50,7 +48,6 @@ export default function Cabecalho() {
             <BotaoSaidaRapida compacto />
           </div>
 
-          {/* Telas menores: os links ficam no menu */}
           <button
             type="button"
             aria-expanded={menuAberto}
@@ -60,7 +57,6 @@ export default function Cabecalho() {
             className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-[10px] border-[1.5px] border-nevoa px-2.5 font-semibold hover:bg-azul-claro lg:hidden"
           >
             <Icone nome={menuAberto ? 'fechar' : 'menu'} tamanho={20} cor={cores.marinho} destaque={cores.douradoEscuro} />
-            {/* Em celulares bem estreitos fica só o ícone (o aria-label dá o nome para leitores de tela) */}
             <span aria-hidden="true" className="max-[379px]:hidden">{menuAberto ? 'Fechar' : 'Menu'}</span>
           </button>
         </div>
@@ -85,7 +81,6 @@ function BotaoSugerir({ larguraTotal = false }: { larguraTotal?: boolean }) {
   )
 }
 
-// Menu de celular e tablet: links do site e, abaixo, a conta
 function MenuCompacto({ id }: { id: string }) {
   const sessao = useSessao()
   const { pathname } = useLocation()
@@ -115,7 +110,6 @@ function MenuCompacto({ id }: { id: string }) {
           </li>
         </ul>
 
-        {/* No tablet a conta já aparece no topo; aqui só no celular */}
         <div className="mt-5 grid gap-3 md:hidden">
           {sessao.status === 'logado' ? (
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -144,7 +138,6 @@ function MenuCompacto({ id }: { id: string }) {
   )
 }
 
-// "Entrar" para quem não está logado; primeiro nome (leva para Minha conta) e "Sair" para quem está
 function Conta() {
   const sessao = useSessao()
   const { pathname } = useLocation()
@@ -182,11 +175,9 @@ function Conta() {
     )
   }
 
-  // Enquanto confere a sessão, guarda o espaço para o cabeçalho não "pular"
   return (
     <Link
       to="/entrar"
-      // Volta para esta página depois de entrar
       state={{ de: pathname }}
       aria-hidden={sessao.status === 'carregando' || undefined}
       tabIndex={sessao.status === 'carregando' ? -1 : undefined}

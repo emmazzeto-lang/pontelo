@@ -5,15 +5,11 @@ import PaginaConta from './PaginaConta'
 import { useSessao, type Usuario } from '../servicos/sessao'
 
 type Props = {
-  // Texto para quem ainda não entrou: por que precisa de conta aqui
   motivo: string
-  // Se informado, só quem tem esse papel vê o conteúdo
   papel?: Usuario['papel']
   children: (usuario: Usuario) => ReactNode
 }
 
-// Mostra o conteúdo só para quem está logado (e com o papel certo); senão, explica e leva para o login.
-// Todos os estados usam min-h-screen: assim o rodapé não "sobe" de repente quando um troca pelo outro.
 export default function ExigeConta({ motivo, papel, children }: Props) {
   const sessao = useSessao()
   const { pathname } = useLocation()

@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// E-mail sempre em minúsculas e sem espaços, para "Ana@x.com" e "ana@x.com " serem a mesma conta
 const email = z
   .string()
   .trim()
@@ -12,7 +11,6 @@ export const registro = z.object({
   nome: z.string().trim().min(2, 'Informe seu nome.').max(80),
   email,
   senha: z.string().min(8, 'A senha precisa ter pelo menos 8 caracteres.').max(128),
-  // LGPD: a conta só é criada com o aceite explícito da política de privacidade
   aceite_privacidade: z.literal(true, { error: 'É preciso aceitar a política de privacidade.' }),
 })
 

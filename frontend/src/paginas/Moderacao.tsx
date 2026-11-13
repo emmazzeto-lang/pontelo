@@ -97,7 +97,6 @@ function Lista<T>({ consulta, vazio, tituloErro, render }: PropsLista<T>) {
   return <ul className="grid gap-4">{itens.map(render)}</ul>
 }
 
-// Depois de qualquer decisão: atualiza as filas e as buscas públicas
 function useAtualizarTudo() {
   const clienteConsultas = useQueryClient()
   return () => {
@@ -194,7 +193,6 @@ function CartaoDenuncia({ denuncia: d }: { denuncia: DenunciaModeracao }) {
 
   const acao = useMutation({
     mutationFn: async (tipo: 'resolvida' | 'descartada' | 'arquivar') => {
-      // Arquivar tira o serviço do ar e encerra a denúncia como resolvida
       if (tipo === 'arquivar') {
         await decidirServico(d.servico.id, 'arquivar', `Denúncia: ${d.motivo}`)
         await mudarDenuncia(d.id, 'resolvida')

@@ -1,6 +1,3 @@
-// Chamadas à API do modo discreto. Arquivo pequeno e separado do api.ts de propósito:
-// a calculadora importa só isto, para continuar leve e sem nenhum texto do Pontelo no código dela.
-
 const URL_API = import.meta.env.VITE_API_URL
 const usarExemplos = import.meta.env.VITE_USAR_EXEMPLOS === 'true'
 
@@ -24,7 +21,6 @@ async function enviar<T>(caminho: string, corpo: unknown): Promise<T> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(corpo),
-      // O alerta precisa sair mesmo que a página seja fechada logo depois
       keepalive: true,
     })
   } catch {
@@ -48,14 +44,12 @@ export const sairComoContato = (token: string) => enviar('/alerta/contatos/sair'
 
 export type Localizacao = { lat: number; lng: number; precisao_m: number }
 
-// Pega a localização SÓ se a pessoa já deu permissão antes (na configuração).
-// Assim a calculadora nunca mostra uma janela "permitir localização?", que chamaria atenção.
 export async function localizacaoSilenciosa(): Promise<Localizacao | undefined> {
   try {
     const permissao = await navigator.permissions?.query({ name: 'geolocation' })
     if (permissao && permissao.state !== 'granted') return undefined
   } catch {
-    // navegador sem a API de permissões: tenta mesmo assim
+    // Ignorado quando a API de permissões não é suportada
   }
   return new Promise((resolver) => {
     navigator.geolocation.getCurrentPosition(
@@ -68,7 +62,6 @@ export async function localizacaoSilenciosa(): Promise<Localizacao | undefined> 
 
 type Alerta = { apelido: string; contatos: string[]; teste?: boolean }
 
-// Tenta algumas vezes antes de desistir: sinal fraco é comum justamente na hora do aperto
 export async function enviarAlerta({ apelido, contatos, teste = false }: Alerta) {
   const localizacao = await localizacaoSilenciosa()
   let ultimaFalha: unknown
@@ -77,7 +70,6 @@ export async function enviarAlerta({ apelido, contatos, teste = false }: Alerta)
       return await enviar<{ dados: { enviados: number } }>('/alerta', { apelido, contatos, localizacao, teste })
     } catch (falha) {
       ultimaFalha = falha
-      // Erro que repetir não resolve (ex.: nenhum contato confirmou): para na hora
       if (falha instanceof FalhaAlerta && falha.codigo !== 'SEM_CONEXAO' && falha.codigo !== 'ALERTA_NAO_ENVIADO') break
       await new Promise((r) => setTimeout(r, 4000))
     }

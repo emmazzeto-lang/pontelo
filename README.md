@@ -1,60 +1,55 @@
 # Pontelo
 
-**Encontre ajuda gratuita perto de você.** O Pontelo é um mapa colaborativo e conferido de serviços públicos e gratuitos (abrigos, refeitórios, atendimento jurídico, saúde, CRAS e emissão de documentos) para pessoas em situação de vulnerabilidade.
+Plataforma web para localização e verificação colaborativa de serviços públicos e gratuitos (abrigos, refeitórios, atendimento jurídico, saúde, CRAS e emissão de documentos) voltada a pessoas em situação de vulnerabilidade.
 
-> Projeto acadêmico. Os serviços que aparecem no ambiente de desenvolvimento são **fictícios**.
+Projeto acadêmico. Os registros carregados pelo script de seed são fictícios e servem apenas para demonstração.
 
-## O que dá para fazer
+## Funcionalidades
 
-| Quem | O quê |
-|---|---|
-| Qualquer pessoa, sem conta | Buscar por GPS, CEP ou cidade; filtrar por categoria e "aberto agora"; ver lista e mapa; ligar e traçar rota; denunciar informação errada (anônimo) |
-| Quem tem conta | Confirmar que um serviço ainda funciona; sugerir serviço novo; baixar ou excluir os próprios dados |
-| Moderação | Aprovar ou rejeitar sugestões; tratar denúncias; tirar serviço do ar |
-| Pesquisadores e outros sites | API pública de leitura e exportação em GeoJSON |
-
-**Modo discreto:** em `/modo-discreto`, a pessoa instala no celular uma calculadora que funciona de verdade (nome e ícone de "Calculadora"). Um código secreto seguido de `=` envia por e-mail um pedido de ajuda com a localização para até 3 contatos de confiança; outro código abre o Pontelo. A tela não muda (se o envio falhar, aparece "Erro"), e a saída rápida do Pontelo volta para a calculadora. Os contatos ficam só no celular; cada um precisa aceitar por e-mail antes de receber alertas. **Não substitui o 190.**
-
-**Proteção de quem busca ajuda:** botão de saída rápida (ou tecla Esc), nenhuma localização gravada no servidor ou no endereço da página, e endereço sigiloso para abrigos de vítimas de violência (sem endereço, sem marcador no mapa e distância arredondada).
+- **Busca pública (sem cadastro):** pesquisa por GPS, CEP ou endereço; filtros por categoria, distância e funcionamento no momento; visualização em lista ou mapa; denúncia anônima de informações incorretas.
+- **Colaboração (com conta):** confirmação de funcionamento de serviços (atualizando o selo de verificação de 90 dias), sugestão de novos locais, exportação de dados pessoais e exclusão de conta.
+- **Moderação:** fila de análise para aprovar, rejeitar ou arquivar sugestões de serviços e gerenciar denúncias abertas.
+- **Modo discreto e segurança:**
+  - Botão de saída rápida (ou tecla `Esc`) que encerra a sessão local e redireciona para uma busca neutra.
+  - Omissão de endereço e coordenadas exatas em abrigos com endereço sigiloso.
+  - Calculadora funcional instalável (`/calculadora.html`), configurada em `/modo-discreto`, que permite abrir o Pontelo ou disparar alertas por e-mail com geolocalização para contatos de confiança previamente confirmados.
+- **Dados abertos:** exportação dos serviços publicados em formato GeoJSON e documentação OpenAPI/Swagger.
 
 ## Tecnologias
 
 - **Front-end:** React 19, TypeScript, Vite, Tailwind CSS 4, React Router, TanStack Query, Leaflet (OpenStreetMap)
-- **Back-end:** Node.js, Fastify 5, Zod (validação e documentação Swagger), Prisma 7, Argon2id, JWT
-- **Banco:** PostgreSQL 16 com PostGIS (consultas por distância)
-- **Endereços:** ViaCEP e Nominatim (OpenStreetMap), com cache e fila de 1 pedido por segundo
+- **Back-end:** Node.js, Fastify 5, Zod, Prisma 7, Argon2id, JWT, Nodemailer
+- **Banco de dados:** PostgreSQL 16 com extensão PostGIS
+- **Geocodificação:** ViaCEP e Nominatim (OpenStreetMap) com cache em banco
 
-## Como rodar
+## Execução local
 
 ### Pré-requisitos
 
-- [Node.js](https://nodejs.org) 22 ou mais novo
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) aberto
+- Node.js 22+
+- Docker e Docker Compose
 
-### 1. Configurar o ambiente
+### 1. Variáveis de ambiente
 
-Copie o modelo e preencha os valores em branco:
+Copie o arquivo de exemplo na raiz do projeto e preencha os segredos necessários:
 
 ```bash
 cp .env.example .env
 ```
 
-- `POSTGRES_PASSWORD`: uma senha qualquer. Use a mesma dentro da `DATABASE_URL`, no lugar de `SENHA`.
-- `JWT_SECRET` e `REFRESH_TOKEN_SECRET`: dois textos longos e diferentes. Para gerar cada um:
+Defina uma senha para `POSTGRES_PASSWORD` (repetindo-a em `DATABASE_URL`), a senha inicial `SEED_SENHA_MODERADOR` e chaves aleatórias para `JWT_SECRET` e `REFRESH_TOKEN_SECRET`:
 
-  ```bash
-  node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
-  ```
+```bash
+node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+```
 
-- `SEED_SENHA_MODERADOR`: senha da conta de moderação criada no passo 3.
-
-### 2. Subir o banco
+### 2. Banco de dados e servidor de e-mail de teste
 
 ```bash
 docker compose up -d
 ```
 
-O banco fica na porta **5433** (e não na 5432) para não brigar com um PostgreSQL instalado no computador. Na primeira vez, o `schema.sql` cria as tabelas sozinho.
+O PostgreSQL + PostGIS é exposto na porta `5433` e inicializado automaticamente com o script `schema.sql`. O Mailpit fica disponível em `http://localhost:8025` para inspecionar os e-mails enviados em ambiente de desenvolvimento.
 
 ### 3. Back-end
 
@@ -65,11 +60,7 @@ npm run seed
 npm run dev
 ```
 
-O `seed` cria 10 serviços fictícios em São Paulo e a conta de moderação (`SEED_EMAIL_MODERADOR` / `SEED_SENHA_MODERADOR`). Pode rodar de novo quando quiser: ele recria os serviços de exemplo.
-
-A API sobe em `http://localhost:3000`, com documentação interativa em **http://localhost:3000/docs**.
-
-Os e-mails do modo discreto (convites e alertas) não saem para a internet em desenvolvimento: aparecem no **Mailpit**, em **http://localhost:8025**. Para enviar de verdade, troque as variáveis `SMTP_*` do `.env` pelas de um provedor de e-mail.
+A API será iniciada em `http://localhost:3000` e a documentação Swagger em `http://localhost:3000/docs`.
 
 ### 4. Front-end
 
@@ -81,86 +72,47 @@ npm install
 npm run dev
 ```
 
-Abra **http://localhost:5173** e busque o CEP `01310-100` (Avenida Paulista), com raio de 10 km, para ver os 10 serviços.
+A aplicação ficará disponível em `http://localhost:5173`. Para testar a busca com os dados do seed em São Paulo, utilize o CEP `01310-100` com raio de 10 km. Caso queira executar o front-end sem a API, defina `VITE_USAR_EXEMPLOS=true` no `.env`.
 
-> Para mostrar o site sem back-end, use `VITE_USAR_EXEMPLOS=true` no `.env`: o front usa dados de exemplo embutidos.
+## Scripts principais
 
-### Recriar o banco do zero
+### Back-end (`./backend`)
 
-Apaga **todos** os dados do banco local:
+- `npm run dev`: inicia o servidor em modo de desenvolvimento
+- `npm test`: executa os testes automatizados (horários e controle de acesso)
+- `npm run verificar`: executa a checagem de tipos do TypeScript
+- `npm run seed`: popula o banco com serviços de exemplo e a conta de moderação
 
-```bash
-docker compose down -v
-docker compose up -d
-cd backend && npm run seed
-```
+### Front-end (`./frontend`)
 
-## Scripts
+- `npm run dev`: inicia o servidor de desenvolvimento do Vite
+- `npm run build`: gera os arquivos de produção em `frontend/dist`
+- `npm run lint`: analisa o código com ESLint
 
-| Pasta | Comando | O que faz |
-|---|---|---|
-| `backend` | `npm run dev` | API com recarga automática |
-| `backend` | `npm test` | Testes automatizados (regras de horário e permissões de cada rota) |
-| `backend` | `npm run verificar` | Confere os tipos do TypeScript |
-| `backend` | `npm run seed` | Dados de exemplo e conta de moderação |
-| `frontend` | `npm run dev` | Site com recarga automática |
-| `frontend` | `npm run build` | Versão de produção em `frontend/dist` |
-| `frontend` | `npm run lint` | Confere o código com o ESLint |
-
-## Estrutura
+## Estrutura do projeto
 
 ```
 pontelo/
-├── schema.sql              Tabelas, gatilho do selo e view pública (PostGIS)
-├── docker-compose.yml      PostgreSQL + PostGIS
+├── schema.sql              Estrutura do banco, triggers e view pública (PostGIS)
+├── docker-compose.yml      Containers PostgreSQL/PostGIS e Mailpit
 ├── backend/
-│   ├── prisma/             schema.prisma (gerado do banco) e seed.ts
+│   ├── prisma/             Schema do Prisma e script de seed
 │   ├── src/
-│   │   ├── rotas/          Recebem o pedido e validam (Zod)
-│   │   ├── servicos/       Regras de negócio (horários, moderação, login…)
-│   │   ├── repositorios/   Consultas ao banco
-│   │   ├── esquemas/       Formatos de entrada e saída (viram o Swagger)
-│   │   └── plugins/        Banco e autenticação
-│   └── testes/
-└── frontend/src/
-    ├── paginas/            Uma por rota do site
-    ├── componentes/        Peças reutilizáveis (botões, cartões, mapa…)
-    ├── servicos/           Chamadas à API e sessão
-    └── dados/              Categorias, telefones e dados de exemplo
+│   │   ├── esquemas/       Schemas Zod de validação
+│   │   ├── plugins/        Conexão com banco, autenticação e e-mail
+│   │   ├── repositorios/   Consultas SQL/Prisma
+│   │   ├── rotas/          Endpoints da API (/api/v1)
+│   │   └── servicos/       Regras de negócio e geocodificação
+│   └── testes/             Testes automatizados
+└── frontend/
+    ├── calculadora.html    Entrada independente da calculadora (modo discreto)
+    └── src/
+        ├── calculadora/    Interface e lógica da calculadora
+        ├── componentes/    Componentes reutilizáveis e mapa
+        ├── dados/          Categorias, telefones úteis e dados de exemplo
+        ├── discreto/       Preferências locais e envio de alertas
+        ├── hooks/          Hooks de busca e saída rápida
+        ├── paginas/        Telas da aplicação
+        ├── servicos/       Cliente HTTP, tipos e controle de sessão
+        └── utils/          Formatação de datas, distâncias e horários
 ```
-
-## API
-
-Todas as rotas começam com `/api/v1`. Lista completa, com exemplos, em `/docs`.
-
-| Rota | Acesso |
-|---|---|
-| `GET /servicos`, `GET /servicos/{id}`, `GET /categorias`, `GET /geocodificar` | Pública |
-| `GET /dados/servicos.geojson` | Pública (dados abertos) |
-| `POST /servicos/{id}/denuncias` | Pública e anônima (5 a cada 10 min) |
-| `POST /auth/registro`, `/auth/login`, `/auth/refresh`, `/auth/logout` | Pública |
-| `GET /me`, `GET /me/dados`, `DELETE /me` | Com login |
-| `POST /servicos`, `POST /servicos/{id}/confirmacoes` | Com login |
-| `POST /alerta`, `/alerta/contatos/...` | Pública, sem conta (modo discreto; só envia para contatos que aceitaram) |
-| `/moderacao/...` | Só moderação |
-
-Erros sempre no mesmo formato: `{ "erro": { "codigo": "...", "mensagem": "...", "detalhes": [...] } }`.
-
-## Segurança e privacidade
-
-- Senhas com **Argon2id**; nenhuma senha ou token aparece em log.
-- **Token de acesso de 15 minutos**, guardado só na memória do navegador.
-- **Sessão de 7 dias** em cookie `HttpOnly` e `SameSite=Strict`:
-  - o cookie é trocado a cada uso;
-  - o banco guarda só o hash;
-  - se um cookie antigo for reutilizado, todas as sessões da pessoa são encerradas.
-- Toda sugestão nasce **pendente** e só aparece depois da moderação; cada decisão fica registrada.
-- **Limite de pedidos** por IP (100 por minuto; menos no login, nas sugestões e nas denúncias).
-- **LGPD:** só nome e e-mail de quem cria conta, aceite explícito, política de privacidade em `/privacidade`, exportação dos dados e exclusão da conta em `/minha-conta`.
-
-## Limitações conhecidas
-
-- A moderação ainda não edita um serviço publicado; ela pode tirá-lo do ar ou tratar a denúncia.
-- Chaves de API, painel de organização, modo offline e estatísticas ficaram para versões futuras.
-- O modo discreto envia o alerta por e-mail, que pode atrasar ou cair no spam. SMS ou WhatsApp exigiriam um provedor pago.
-- A calculadora é instalada pelo navegador, então o site do Pontelo fica no histórico até a pessoa apagá-lo.

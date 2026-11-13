@@ -22,7 +22,6 @@ const extras: Record<string, Extras> = {
   '10': { descricao: 'Acolhimento sigiloso para mulheres em situação de violência e seus filhos. Ligue para combinar o atendimento.', cep: null, documentos_exigidos: null, horarios: [0, 1, 2, 3, 4, 5, 6].map((dia_semana) => ({ dia_semana, abre: '00:00', fecha: '23:59' })) },
 }
 
-// Na Etapa 8, isso será trocado por GET /servicos/{id}
 export function buscarDetalheExemplo(id: string): ServicoDetalhe | null {
   const servico = servicosExemplo.find((s) => s.id === id)
   if (!servico) return null

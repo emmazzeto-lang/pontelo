@@ -1,18 +1,17 @@
 export type Horario = {
-  dia_semana: number // 0 = domingo ... 6 = sábado
-  abre: string // "HH:MM"
-  fecha: string // "HH:MM"
+  dia_semana: number
+  abre: string
+  fecha: string
 }
 
 export type Momento = {
-  dia: number // 0 = domingo ... 6 = sábado
-  minutos: number // minutos desde a meia-noite
+  dia: number
+  minutos: number
 }
 
 const NOMES_DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado']
 const SIGLAS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-// Dia e hora em Brasília, independente do fuso do servidor
 export function momentoEmSaoPaulo(data = new Date()): Momento {
   const partes = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Sao_Paulo',
@@ -34,16 +33,13 @@ function paraMinutos(hora: string) {
   return Number(h) * 60 + Number(m)
 }
 
-// "11:00" vira "11h" e "11:30" vira "11h30"
 export function formatarHora(hora: string) {
   const [h = '0', m = '00'] = hora.split(':')
   return m === '00' ? `${Number(h)}h` : `${Number(h)}h${m}`
 }
 
-// Intervalo que atravessa a meia-noite, como 22:00 às 06:00
 const viraODia = (h: Horario) => paraMinutos(h.fecha) <= paraMinutos(h.abre)
 
-// Devolve o intervalo aberto agora, ou undefined se estiver fechado
 export function intervaloAberto(horarios: Horario[], agora: Momento) {
   const ontem = (agora.dia + 6) % 7
 
@@ -54,12 +50,10 @@ export function intervaloAberto(horarios: Horario[], agora: Momento) {
     if (h.dia_semana === agora.dia) {
       return viraODia(h) ? agora.minutos >= abre : agora.minutos >= abre && agora.minutos < fecha
     }
-    // Intervalo de ontem que ainda não acabou
     return h.dia_semana === ontem && viraODia(h) && agora.minutos < fecha
   })
 }
 
-// Texto curto para o card: "fecha às 14h", "abre amanhã às 8h"...
 export function descreverHorarioHoje(horarios: Horario[], agora: Momento) {
   const aberto = intervaloAberto(horarios, agora)
   if (aberto && paraMinutos(aberto.abre) === 0 && paraMinutos(aberto.fecha) >= 23 * 60 + 59) {

@@ -49,7 +49,6 @@ function FormularioDenuncia({ servicoId, aoEnviar }: { servicoId: string; aoEnvi
   const [detalhes, setDetalhes] = useState('')
   const [erro, setErro] = useState('')
 
-  // useMutation: o equivalente do useQuery para ENVIAR dados
   const envio = useMutation({
     mutationFn: () => enviarDenuncia(servicoId, motivo, detalhes),
     onSuccess: aoEnviar,

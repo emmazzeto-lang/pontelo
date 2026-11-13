@@ -2,7 +2,6 @@ import { Link } from 'react-router'
 import Logo from './Logo'
 import { URL_GEOJSON } from '../servicos/api'
 
-// "externo": arquivo da API (não é página do site), então usa <a> em vez de <Link>
 type LinkRodape = { para: string; texto: string; externo?: boolean }
 
 const colunas: { titulo: string; links: LinkRodape[] }[] = [

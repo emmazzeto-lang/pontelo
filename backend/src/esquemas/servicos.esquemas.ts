@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-// Os mesmos esquemas validam a entrada E geram a documentação do Swagger em /docs
-
 export const slugsCategoria = ['abrigo', 'refeitorio', 'juridico', 'saude', 'cras', 'documentos'] as const
 
 export const erroResposta = z.object({

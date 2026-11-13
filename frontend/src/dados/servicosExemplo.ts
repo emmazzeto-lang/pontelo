@@ -138,7 +138,6 @@ export const servicosExemplo: Servico[] = [
     localizacao: { lat: -23.525, lng: -46.667 },
   },
   {
-    // Endereço restrito: igual à API, sem endereço nem coordenadas e com distância arredondada
     id: '10',
     nome: 'Casa Abrigo para Mulheres',
     categoria: 'abrigo',

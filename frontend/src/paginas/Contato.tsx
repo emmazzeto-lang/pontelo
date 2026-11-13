@@ -4,11 +4,6 @@ import { Botao } from '../componentes/Botao'
 import PaginaTexto, { Topico } from '../componentes/PaginaTexto'
 import { confirmarContato, sairComoContato } from '../discreto/alerta'
 
-// Páginas abertas pelos links do e-mail que o CONTATO de confiança recebe.
-// O token vem depois do "#": essa parte do endereço não é enviada a servidor nenhum.
-// Há um botão (em vez de confirmar sozinho ao abrir) porque alguns e-mails abrem os links
-// automaticamente para checar vírus, e isso não pode valer como aceite.
-
 const tokenDoEndereco = () => window.location.hash.slice(1)
 
 export function ConfirmarContato() {

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Cores e fontes da documentação técnica (seção 2) */
 @theme {
   --color-marinho: #13365d;
   --color-azul: #1f5f94;
@@ -21,7 +20,6 @@
   --font-texto: "Inter", system-ui, sans-serif;
 }
 
-/* Largura padrão do conteúdo (a mesma do cabeçalho) */
 @utility conteudo {
   width: 100%;
   max-width: 1200px;
@@ -29,7 +27,6 @@
   padding-inline: 1rem;
 }
 
-/* Tamanho dos títulos de seção: cresce com a tela, entre 28px e 44px */
 @utility titulo-secao {
   font-size: clamp(1.75rem, 3.6vw, 2.75rem);
 }

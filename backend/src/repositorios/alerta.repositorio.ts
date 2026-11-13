@@ -1,7 +1,5 @@
 import { banco } from '../plugins/banco.js'
 
-// Tabela contatos_alerta: só o hash do e-mail e quando aceitou. Nada sobre quem pediu ajuda.
-
 export async function marcarConfirmado(emailHash: string) {
   await banco.contatos_alerta.upsert({
     where: { email_hash: emailHash },

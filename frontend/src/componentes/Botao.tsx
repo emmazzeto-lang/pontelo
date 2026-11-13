@@ -45,7 +45,6 @@ function Conteudo({ icone, tamanho, children }: Estilo & { children: ReactNode }
   )
 }
 
-// Para ações na própria página (enviar, confirmar...)
 type BotaoProps = Estilo & ComponentProps<'button'>
 
 export function Botao({ variante, tamanho, larguraTotal, icone, className, children, type = 'button', ...resto }: BotaoProps) {
@@ -56,12 +55,10 @@ export function Botao({ variante, tamanho, larguraTotal, icone, className, child
   )
 }
 
-// Para navegar: "para" (página do site) ou "href" (telefone, mapa, site externo)
 type BotaoLinkProps = Estilo & {
   children: ReactNode
   className?: string
   novaAba?: boolean
-  // Só para "para": dados que a próxima página recebe sem aparecer no endereço
   estado?: unknown
 } & ({ para: string; href?: undefined } | { href: string; para?: undefined })
 

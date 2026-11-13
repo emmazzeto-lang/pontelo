@@ -13,7 +13,6 @@ import type { Categoria, Horario, NovaSugestao } from '../servicos/tipos'
 const UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
   'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
 
-// Segunda primeiro, domingo por último (como nas placas de horário)
 const DIAS = [
   { dia: 1, nome: 'Segunda' }, { dia: 2, nome: 'Terça' }, { dia: 3, nome: 'Quarta' },
   { dia: 4, nome: 'Quinta' }, { dia: 5, nome: 'Sexta' }, { dia: 6, nome: 'Sábado' }, { dia: 0, nome: 'Domingo' },
@@ -31,7 +30,6 @@ const inicial: Dados = {
 const horariosIniciais = (): Record<number, HorarioDia> =>
   Object.fromEntries(DIAS.map(({ dia }) => [dia, { aberto: false, abre: '08:00', fecha: '17:00' }]))
 
-// As mesmas regras da API, para a pessoa ver o problema antes de enviar
 function validar(d: Dados, horarios: Record<number, HorarioDia>): Erros {
   const erros: Erros = {}
   if (d.nome.trim().length < 3) erros.nome = 'Informe o nome do serviço.'
@@ -49,7 +47,6 @@ function validar(d: Dados, horarios: Record<number, HorarioDia>): Erros {
   return erros
 }
 
-// Erros que vieram da API, colocados no campo certo
 function errosDaApi(erro: Error): Erros {
   if (!(erro instanceof ErroApi)) return {}
   if (erro.codigo === 'ENDERECO_NAO_ENCONTRADO') return { endereco: erro.message }
@@ -76,7 +73,6 @@ function FormularioSugestao() {
     onError: (falha) => setErros(errosDaApi(falha)),
   })
 
-  // Ao corrigir um campo, o aviso de erro dele some na hora
   const limparErro = (campo: keyof Erros) =>
     setErros((atual) => {
       if (!(campo in atual)) return atual
@@ -94,7 +90,6 @@ function FormularioSugestao() {
     limparErro('horarios')
   }
 
-  // Atalho: o horário de segunda vale para todos os dias úteis
   function copiarSegunda() {
     const segunda = horarios[1]!
     setHorarios((atual) => ({ ...atual, 2: { ...segunda }, 3: { ...segunda }, 4: { ...segunda }, 5: { ...segunda } }))

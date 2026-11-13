@@ -8,14 +8,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-servicos_db}
     ports:
-      # 5433 do lado de fora para não brigar com um PostgreSQL instalado no computador
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
 
-  # Caixa de e-mail de mentira para desenvolvimento: tudo que a API envia aparece em http://localhost:8025
-  # (em produção, troque SMTP_* no .env por um provedor de e-mail de verdade)
   email:
     image: axllent/mailpit:v1.27
     container_name: pontelo_email

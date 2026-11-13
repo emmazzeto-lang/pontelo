@@ -6,15 +6,12 @@ import { autenticar } from '../plugins/autenticacao.js'
 import { sugerir } from '../servicos/moderacao.servico.js'
 import * as servicos from '../servicos/servicos.servico.js'
 
-// Rotas de quem está logado e colabora com o mapa. O "Sugerir serviço" (Dia 3) também entra aqui.
 export const rotasColaboracao: FastifyPluginAsyncZod = async (app) => {
-  // Todas as rotas deste arquivo exigem login
   app.addHook('preHandler', autenticar)
 
   app.post(
     '/servicos',
     {
-      // Cada sugestão consulta o Nominatim (1 por segundo no máximo): limite apertado por IP
       config: { rateLimit: { max: 10, timeWindow: '1 hour' } },
       schema: {
         tags: ['Colaboração'],

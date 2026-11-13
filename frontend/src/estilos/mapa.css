@@ -2,7 +2,6 @@
   font-family: var(--font-texto);
 }
 
-/* Devolve as cores dos links e botões dentro do balão */
 .leaflet-popup-content a.text-marinho {
   color: var(--color-marinho);
 }
@@ -11,7 +10,6 @@
   color: #fff;
 }
 
-/* Marcador redondo com o ícone da categoria */
 .marcador-servico {
   display: grid;
   place-items: center;

@@ -1,4 +1,3 @@
-/* Calculadora: visual próprio e neutro, sem as cores e fontes do Pontelo (faz parte do disfarce) */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -16,7 +15,7 @@ body {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  touch-action: manipulation; /* sem zoom de toque duplo ao digitar rápido */
+  touch-action: manipulation;
 }
 
 .calculadora {

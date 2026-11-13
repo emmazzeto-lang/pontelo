@@ -3,7 +3,6 @@ import { ErroApi } from '../erros.js'
 
 type Coordenadas = { lat: number; lng: number }
 
-// Cache em memória (seção 5 da documentação): evita repetir consultas e respeita o limite do Nominatim
 const UM_DIA_MS = 24 * 60 * 60 * 1000
 const LIMITE_CACHE = 1000
 const cache = new Map<string, { valor: Coordenadas; expira: number }>()
@@ -22,8 +21,7 @@ function guardarCache(chave: string, valor: Coordenadas) {
   cache.set(chave, { valor, expira: Date.now() + UM_DIA_MS })
 }
 
-// Política do Nominatim: no máximo 1 pedido por segundo.
-// Cada chamada reserva a próxima vaga antes de esperar, então pedidos simultâneos fazem fila.
+// Respeita o limite de 1 requisição por segundo do Nominatim
 let proximaVaga = 0
 const esperar = (ms: number) => new Promise((resolver) => setTimeout(resolver, ms))
 
@@ -64,7 +62,6 @@ async function porCep(cep: string) {
   const endereco = await buscarJson<RespostaViaCep>(`https://viacep.com.br/ws/${cep}/json/`)
   if (endereco.erro || !endereco.localidade || !endereco.uf) return null
 
-  // Tenta a rua; se o Nominatim não achar, fica com o centro da cidade
   const cidade = { city: endereco.localidade, state: endereco.uf, country: 'Brasil' }
   if (endereco.logradouro) {
     const naRua = await nominatim({ ...cidade, street: endereco.logradouro })

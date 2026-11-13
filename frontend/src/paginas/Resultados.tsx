@@ -14,7 +14,6 @@ import { useServicos } from '../hooks/useServicos'
 import { foiConferido } from '../servicos/filtrar'
 import type { Busca, Categoria, Local } from '../servicos/tipos'
 
-// Só baixa o mapa quando a pessoa abrir a visão de mapa
 const MapaServicos = lazy(() => import('../componentes/MapaServicos'))
 
 const RAIO_PERTO = 3000
@@ -28,7 +27,6 @@ export default function Resultados() {
     return <PedirLocal categoria={busca?.categoria ?? null} />
   }
 
-  // A "key" muda a cada nova busca e faz os filtros voltarem ao padrão
   return <ListaResultados key={key} local={busca.local} categoria={busca.categoria} />
 }
 

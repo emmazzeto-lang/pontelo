@@ -10,9 +10,7 @@ const ok = z.object({ dados: z.object({ ok: z.literal(true) }) })
 
 const docs = { tags: ['Modo discreto'] }
 
-// Rotas do modo discreto. Não exigem conta: os contatos ficam no celular da pessoa, não no servidor.
 export const rotasAlerta: FastifyPluginAsyncZod = async (app) => {
-  // Nada disso fica em cache em lugar nenhum
   app.addHook('onSend', async (_pedido, resposta) => {
     resposta.header('Cache-Control', 'no-store')
   })
@@ -20,7 +18,6 @@ export const rotasAlerta: FastifyPluginAsyncZod = async (app) => {
   app.post(
     '/alerta/contatos/convite',
     {
-      // Cada convite manda um e-mail: limite apertado para ninguém usar isso para spam
       config: { rateLimit: { max: 6, timeWindow: '1 hour' } },
       schema: {
         ...docs,

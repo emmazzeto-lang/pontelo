@@ -1,5 +1,3 @@
-// Erro de negócio no formato da documentação (seção 7):
-// { "erro": { "codigo": "...", "mensagem": "..." } }
 export class ErroApi extends Error {
   status: number
   codigo: string

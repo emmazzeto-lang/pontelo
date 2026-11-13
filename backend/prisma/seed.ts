@@ -1,5 +1,3 @@
-// Coloca dados FICTÍCIOS no banco para desenvolver e apresentar.
-// Rodar com: npm run seed  (pode rodar de novo: apaga e recria os serviços de exemplo)
 import { PrismaPg } from '@prisma/adapter-pg'
 import argon2 from 'argon2'
 import { PrismaClient } from '../src/generated/prisma/client.js'
@@ -40,7 +38,6 @@ const exemplos: Exemplo[] = [
   { nome: 'CRAS Região Central', categoria: 'cras', descricao: 'Orientação sobre benefícios sociais e acompanhamento de famílias.', endereco: 'Av. Rio Branco, 1500 · Campos Elíseos', cep: '01206000', lat: -23.531, lng: -46.645, telefone: '1133335555', documentos: 'CPF e comprovante de endereço, se tiver.', conferidoHaDias: 30, horarios: [[UTEIS, '08:00', '16:00']] },
   { nome: 'Posto de Documentos Cidadão', categoria: 'documentos', descricao: 'Emissão de RG, CPF, carteira de trabalho e segunda via.', endereco: 'Rua Vergueiro, 2000 · Vila Mariana', cep: '04101000', lat: -23.583, lng: -46.637, telefone: null, documentos: 'Certidão de nascimento ou casamento.', conferidoHaDias: 100, horarios: [[UTEIS, '09:00', '16:00']] },
   { nome: 'Cozinha Solidária Vila Esperança', categoria: 'refeitorio', descricao: 'Cozinha comunitária com almoço gratuito de segunda a sexta.', endereco: 'Rua do Bosque, 58 · Barra Funda', cep: '01139000', lat: -23.525, lng: -46.667, telefone: '1133336666', documentos: null, conferidoHaDias: 15, horarios: [[UTEIS, '11:00', '13:00']] },
-  // Endereço restrito: a API nunca deve devolver endereço, CEP nem coordenadas deste
   { nome: 'Casa Abrigo para Mulheres', categoria: 'abrigo', descricao: 'Acolhimento sigiloso para mulheres em situação de violência e seus filhos. Ligue para combinar o atendimento.', endereco: 'Endereço sigiloso (exemplo)', cep: null, lat: -23.558, lng: -46.628, telefone: '1133337777', documentos: null, conferidoHaDias: 8, horarios: [[TODOS, '00:00', '23:59']], restrito: true },
 ]
 
@@ -52,7 +49,6 @@ async function principal() {
       data: { nome: 'Moderação Pontelo', email, senha_hash: await argon2.hash(SEED_SENHA_MODERADOR!), papel: 'moderador' },
     }))
 
-  // Recomeça do zero os serviços de exemplo (os horários saem junto, por causa do ON DELETE CASCADE)
   await banco.servicos.deleteMany({ where: { criado_por: moderador.id } })
 
   const categorias = new Map((await banco.categorias.findMany()).map((c) => [c.slug, c.id]))
@@ -61,7 +57,6 @@ async function principal() {
     const categoriaId = categorias.get(e.categoria)
     if (!categoriaId) throw new Error(`Categoria inexistente: ${e.categoria}`)
 
-    // localizacao é PostGIS, que o Prisma não conhece: por isso este INSERT é SQL puro
     const [criado] = await banco.$queryRaw<{ id: string }[]>`
       INSERT INTO servicos (nome, descricao, categoria_id, endereco, endereco_restrito, cidade, uf, cep,
                             localizacao, telefone, documentos_exigidos, status, ultima_verificacao_em, criado_por)

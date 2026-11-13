@@ -27,8 +27,6 @@ export default function Layout() {
       <Cabecalho />
 
       <main id="conteudo" className="flex-1">
-        {/* Enquanto a página é baixada (só na primeira vez que alguém abre) */}
-        {/* min-h: reserva a altura da página para o rodapé não "pular" quando ela chegar */}
         <Suspense fallback={<p role="status" className="conteudo min-h-screen py-10 text-ardosia">Carregando…</p>}>
           <Outlet />
         </Suspense>

@@ -8,7 +8,6 @@ const UFS = [
 
 const hora = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use o formato HH:MM')
 
-// Campo de texto opcional: string vazia vira "não informado"
 const textoOpcional = (max: number) =>
   z
     .string()
@@ -21,7 +20,6 @@ export const horario = z
   .object({ dia_semana: z.number().int().min(0).max(6), abre: hora, fecha: hora })
   .refine((h) => h.abre !== h.fecha, { message: 'Abertura e fechamento não podem ser iguais', path: ['fecha'] })
 
-// POST /servicos: sugestão de um serviço novo. Entra como "pendente" e só aparece depois da moderação.
 export const novoServico = z.object({
   nome: z.string().trim().min(3, 'Informe o nome do serviço.').max(120),
   categoria: z.enum(slugsCategoria, { error: 'Escolha uma categoria.' }),
@@ -43,8 +41,6 @@ export const novoServico = z.object({
 export const servicoCriado = z.object({
   dados: z.object({ id: z.string(), status: z.literal('pendente') }),
 })
-
-// ---- Moderação ----
 
 export const filtroFila = z.object({
   status: z.enum(['pendente', 'publicado', 'rejeitado', 'arquivado']).default('pendente'),

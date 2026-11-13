@@ -21,15 +21,13 @@ import { rotasColaboracao } from './rotas/colaboracao.rotas.js'
 import { rotasModeracao } from './rotas/moderacao.rotas.js'
 import { rotasPublicas } from './rotas/publicas.rotas.js'
 
-// Mensagens de validação em português
 z.config(z.locales.pt())
 
 export async function construirApp({ registrarLogs = true } = {}) {
   const app = Fastify({
     logger: {
-      // Nos testes automatizados o log fica em silêncio
       level: registrarLogs ? 'info' : 'silent',
-      // Privacidade (seção 8): o log nunca guarda a query, onde vão lat, lng e CEP
+      // Omite a query string dos logs para não registrar coordenadas ou CEP
       serializers: {
         req: (pedido) => ({ method: pedido.method, url: pedido.url.split('?')[0] }),
       },
@@ -39,9 +37,7 @@ export async function construirApp({ registrarLogs = true } = {}) {
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
-  // A interface do Swagger precisa carregar os próprios scripts, por isso o helmet libera só ela
   await app.register(helmet, { contentSecurityPolicy: false })
-  // credentials: o navegador só manda o cookie de sessão para outra porta/domínio se o CORS permitir
   await app.register(cors, { origin: config.FRONTEND_URL, credentials: true, methods: ['GET', 'POST', 'PATCH', 'DELETE'] })
   await app.register(rateLimit, { max: 100, timeWindow: '1 minute' })
   await app.register(cookie)
@@ -54,7 +50,6 @@ export async function construirApp({ registrarLogs = true } = {}) {
         description: 'Serviços públicos e gratuitos perto de você. Leitura pública; escrita exige login.',
         version: '1.0.0',
       },
-      // Botão "Authorize" do /docs: cole o token_acesso recebido no login
       components: {
         securitySchemes: { bearer: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } },
       },
@@ -63,7 +58,6 @@ export async function construirApp({ registrarLogs = true } = {}) {
   })
   await app.register(swaggerUi, { routePrefix: '/docs' })
 
-  // Todo erro sai no mesmo formato: { "erro": { "codigo", "mensagem" } }
   app.setErrorHandler((erro, pedido, resposta) => {
     if (erro instanceof ErroApi) {
       return resposta.status(erro.status).send({ erro: { codigo: erro.codigo, mensagem: erro.message } })

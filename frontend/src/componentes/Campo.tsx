@@ -6,7 +6,6 @@ type Props = Omit<ComponentProps<'input'>, 'id'> & {
   erro?: string
 }
 
-// Mesmo visual do Campo, para textos longos
 export function AreaTexto({
   rotulo,
   dica,
@@ -36,7 +35,6 @@ export function AreaTexto({
   )
 }
 
-// Campo de formulário com rótulo, dica e erro já ligados ao input para leitores de tela
 export default function Campo({ rotulo, dica, erro, className = '', ...input }: Props) {
   const id = useId()
   const idDica = `${id}-dica`

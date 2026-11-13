@@ -115,7 +115,6 @@ function Conteudo({ servico }: { servico: ServicoDetalhe }) {
   )
 }
 
-// "Confirmo que ainda funciona": exige conta, para a confirmação ter alguém responsável por ela
 function ConfirmarFuncionamento({ servicoId }: { servicoId: string }) {
   const sessao = useSessao()
   const { pathname } = useLocation()
@@ -124,7 +123,6 @@ function ConfirmarFuncionamento({ servicoId }: { servicoId: string }) {
   const envio = useMutation({
     mutationFn: () => confirmarServico(servicoId),
     onSuccess: (ultimaVerificacao) => {
-      // Atualiza o selo desta página na hora e faz as listas buscarem de novo
       clienteConsultas.setQueryData<ServicoDetalhe>(['servico', servicoId], (atual) =>
         atual && { ...atual, ultima_verificacao_em: ultimaVerificacao },
       )
@@ -145,7 +143,6 @@ function ConfirmarFuncionamento({ servicoId }: { servicoId: string }) {
     )
   }
 
-  // Guarda o erro numa variável própria para o TypeScript saber que ele existe ao mostrar a mensagem
   const avisoJaConfirmou =
     envio.error instanceof ErroApi && envio.error.codigo === 'CONFIRMACAO_RECENTE' ? envio.error.message : null
   const jaConfirmou = avisoJaConfirmou !== null
@@ -172,7 +169,6 @@ function BotaoVoltar() {
   const navegar = useNavigate()
   const { key } = useLocation()
 
-  // "default" = a pessoa abriu direto por este endereço, sem página anterior no site
   const veioDoSite = key !== 'default'
 
   return (
@@ -200,7 +196,6 @@ function EnderecoComMapa({ servico }: { servico: ServicoDetalhe }) {
   const [verMapa, setVerMapa] = useState(false)
   const servicosNoMapa = useMemo(() => [servico], [servico])
 
-  // Abrigo com endereço sigiloso: só a cidade e o caminho para ligar
   if (servico.endereco_restrito) {
     return (
       <p className="text-ardosia">
@@ -243,7 +238,6 @@ function EnderecoComMapa({ servico }: { servico: ServicoDetalhe }) {
 }
 
 const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
-// Começa na segunda, deixando o domingo por último
 const ORDEM_DIAS = [1, 2, 3, 4, 5, 6, 0]
 
 function TabelaHorarios({ horarios }: { horarios: Horario[] }) {

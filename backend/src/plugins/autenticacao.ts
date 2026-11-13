@@ -2,7 +2,6 @@ import type { FastifyRequest } from 'fastify'
 import { ErroApi } from '../erros.js'
 import type { papel_usuario } from '../generated/prisma/client.js'
 
-// O que vai dentro do token de acesso (e fica em pedido.user depois de conferido)
 declare module '@fastify/jwt' {
   interface FastifyJWT {
     payload: { sub: string; papel: papel_usuario }
@@ -10,7 +9,6 @@ declare module '@fastify/jwt' {
   }
 }
 
-// preHandler: só deixa passar quem mandou "Authorization: Bearer <token>" válido e dentro do prazo
 export async function autenticar(pedido: FastifyRequest) {
   try {
     await pedido.jwtVerify()
@@ -19,7 +17,6 @@ export async function autenticar(pedido: FastifyRequest) {
   }
 }
 
-// preHandler para rotas de um papel específico, como a moderação (Dia 3)
 export function exigirPapel(...papeis: papel_usuario[]) {
   return async (pedido: FastifyRequest) => {
     await autenticar(pedido)

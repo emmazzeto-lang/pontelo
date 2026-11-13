@@ -12,7 +12,6 @@ import { cores } from '../estilos/cores'
 import { formatarDistancia, linkDeRota } from '../utils/formatar'
 import type { Local, Servico } from '../servicos/tipos'
 
-// Serve tanto para a lista (com distância) quanto para o detalhe (sem distância)
 type ServicoNoMapa = Omit<Servico, 'distancia_m'> & { distancia_m: number | null }
 type ComPosicao = ServicoNoMapa & { localizacao: { lat: number; lng: number } }
 
@@ -22,7 +21,6 @@ type Props = {
 }
 
 export default function MapaServicos({ servicos, local }: Props) {
-  // Endereço restrito nunca vira marcador
   const noMapa = useMemo(() => servicos.filter((s): s is ComPosicao => s.localizacao !== null), [servicos])
   const protegidos = servicos.length - noMapa.length
   const primeiro = noMapa[0]
@@ -85,7 +83,6 @@ export default function MapaServicos({ servicos, local }: Props) {
   )
 }
 
-// Ajusta o zoom para todos os serviços aparecerem, inclusive quando um filtro muda
 function EnquadrarServicos({ servicos }: { servicos: ComPosicao[] }) {
   const mapa = useMap()
 

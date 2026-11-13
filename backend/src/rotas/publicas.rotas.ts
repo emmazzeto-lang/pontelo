@@ -5,7 +5,6 @@ import { listarCategorias } from '../repositorios/servicos.repositorio.js'
 import { geocodificar } from '../servicos/geocodificacao.servico.js'
 import * as servicos from '../servicos/servicos.servico.js'
 
-// Rotas de leitura pública (não exigem login). Cada rota só valida e repassa para a camada de serviço.
 export const rotasPublicas: FastifyPluginAsyncZod = async (app) => {
   app.get(
     '/categorias',
@@ -61,7 +60,6 @@ export const rotasPublicas: FastifyPluginAsyncZod = async (app) => {
   app.post(
     '/servicos/:id/denuncias',
     {
-      // Público, mas com limite mais apertado (seção 7): 5 denúncias a cada 10 minutos por IP
       config: { rateLimit: { max: 5, timeWindow: '10 minutes' } },
       schema: {
         tags: ['Leitura pública'],
@@ -88,7 +86,6 @@ export const rotasPublicas: FastifyPluginAsyncZod = async (app) => {
     async (_pedido, resposta) => {
       resposta
         .type('application/geo+json; charset=utf-8')
-        // Dado aberto: qualquer site pode ler, e pode ficar em cache por 1 hora
         .header('Access-Control-Allow-Origin', '*')
         .header('Cache-Control', 'public, max-age=3600')
       return servicos.exportarGeoJson()

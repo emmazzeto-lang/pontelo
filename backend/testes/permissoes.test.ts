@@ -1,8 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { FastifyInstance } from 'fastify'
 
-// Seção 8: "verificação de papel em toda rota, com testes automatizados para cada permissão".
-// Estes testes não precisam do banco: quem não tem permissão é barrado antes de qualquer consulta.
 process.env.DATABASE_URL ??= 'postgresql://teste:teste@localhost:1/teste'
 process.env.FRONTEND_URL ??= 'http://localhost:5173'
 process.env.NOMINATIM_USER_AGENT ??= 'pontelo-testes'
@@ -16,7 +14,6 @@ let tokenVencido: string
 const ID = '00000000-0000-4000-8000-000000000000'
 
 beforeAll(async () => {
-  // Import depois de definir o ambiente: o config.ts confere as variáveis ao carregar
   const { construirApp } = await import('../src/app.js')
   app = await construirApp({ registrarLogs: false })
   await app.ready()

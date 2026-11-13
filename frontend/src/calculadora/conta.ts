@@ -1,14 +1,10 @@
-// Lógica da calculadora, separada da tela para poder ser testada.
-// Funciona como uma calculadora de bolso: cada operação é feita na hora em que se aperta o próximo operador.
-
 export type Operador = '+' | '−' | '×' | '÷'
 
 export type Estado = {
-  visor: string // o que aparece na tela, com vírgula decimal
+  visor: string
   acumulado: number | null
   operador: Operador | null
   comecarNovoNumero: boolean
-  // Números digitados desde o último operador, "=" ou "C". É aqui que os códigos secretos são reconhecidos.
   digitado: string
 }
 
@@ -21,7 +17,6 @@ const paraNumero = (visor: string) => Number(visor.replace(',', '.'))
 
 export function formatar(numero: number) {
   if (!Number.isFinite(numero) || Math.abs(numero) >= 1e12) return ERRO
-  // Arredonda para não mostrar 0,30000000000000004
   return String(Number(numero.toPrecision(10))).replace('.', ',')
 }
 
@@ -50,7 +45,6 @@ export function virgula(e: Estado): Estado {
 export function operador(e: Estado, op: Operador): Estado {
   if (e.visor === ERRO) return e
   const atual = paraNumero(e.visor)
-  // Trocar de operador sem digitar número novo só troca o operador
   if (e.operador && e.comecarNovoNumero) return { ...e, operador: op, digitado: '' }
   const resultado = e.operador && e.acumulado !== null ? calcular(e.acumulado, atual, e.operador) : atual
   const visor = formatar(resultado)
@@ -79,7 +73,6 @@ export function apagarUm(e: Estado): Estado {
   return { ...e, visor, digitado: e.digitado.slice(0, -1) }
 }
 
-// Ao apertar "=": foi digitado um código secreto, sozinho, sem conta pendente?
 export function codigoDigitado(e: Estado) {
   return e.operador === null && e.digitado.length > 0 ? e.digitado : null
 }

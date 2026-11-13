@@ -21,7 +21,6 @@ export default function CaixaBusca({ categoriaInicial = null }: Props) {
 
   function irParaResultados(local: Local) {
     const busca: Busca = { local, categoria }
-    // A busca vai no "state" da navegação, não no endereço (veja a explicação abaixo)
     navegar('/servicos', { state: busca })
   }
 

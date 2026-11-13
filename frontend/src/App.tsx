@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router'
 import Layout from './componentes/Layout'
 import Inicio from './paginas/Inicio'
 
-// A página inicial vem junto; as outras só são baixadas quando alguém abre (deixa o primeiro carregamento leve)
 const Resultados = lazy(() => import('./paginas/Resultados'))
 const DetalheServico = lazy(() => import('./paginas/DetalheServico'))
 const Entrar = lazy(() => import('./paginas/Entrar'))

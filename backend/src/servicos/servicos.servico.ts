@@ -11,8 +11,7 @@ type ParametrosLista = {
   aberto_agora: boolean
 }
 
-// Endereço restrito (seção 8 da documentação): nada que permita achar o lugar.
-// A distância é arredondada para o quilômetro, para não dar para triangular a posição.
+// Em serviços com endereço restrito, omite coordenadas/endereço e arredonda a distância ao km
 function protegerEndereco<T extends Pick<LinhaServico, 'endereco_restrito' | 'endereco' | 'lat' | 'lng'>>(linha: T) {
   if (!linha.endereco_restrito) {
     return { endereco: linha.endereco, localizacao: { lat: linha.lat, lng: linha.lng } }
@@ -79,7 +78,6 @@ export async function denunciar(id: string, motivo: string, descricao?: string) 
   await repositorio.criarDenuncia(id, motivo, descricao?.trim() || null)
 }
 
-// "Confirmo que ainda funciona": uma vez por pessoa, por serviço, a cada 24 horas
 export async function confirmar(servicoId: string, usuarioId: string) {
   if (!(await repositorio.existePublicado(servicoId))) {
     throw new ErroApi(404, 'NAO_ENCONTRADO', 'Serviço não encontrado.')
@@ -91,14 +89,12 @@ export async function confirmar(servicoId: string, usuarioId: string) {
   return { dados: { ultima_verificacao_em: quando.toISOString() } }
 }
 
-// GET /dados/servicos.geojson: formato padrão de mapas, abre direto no QGIS, uMap, geojson.io...
 export async function exportarGeoJson() {
   const linhas = await repositorio.servicosParaDadosAbertos()
   return {
     type: 'FeatureCollection' as const,
     features: linhas.map(({ lat, lng, ultima_verificacao_em, ...propriedades }) => ({
       type: 'Feature' as const,
-      // GeoJSON também usa longitude primeiro
       geometry: { type: 'Point' as const, coordinates: [lng, lat] },
       properties: { ...propriedades, ultima_verificacao_em: ultima_verificacao_em?.toISOString() ?? null },
     })),

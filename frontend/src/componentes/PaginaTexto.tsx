@@ -6,7 +6,6 @@ type Props = {
   children: ReactNode
 }
 
-// Moldura das páginas institucionais: coluna de leitura confortável (cerca de 70 caracteres por linha)
 export default function PaginaTexto({ titulo, resumo, children }: Props) {
   return (
     <article className="mx-auto max-w-3xl px-4 py-10 md:py-16">
@@ -17,7 +16,6 @@ export default function PaginaTexto({ titulo, resumo, children }: Props) {
   )
 }
 
-// Um bloco com título dentro da página
 export function Topico({ titulo, children }: { titulo: string; children: ReactNode }) {
   return (
     <section className="border-t border-nevoa py-7">

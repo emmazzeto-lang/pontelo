@@ -1,4 +1,3 @@
 node_modules/
 dist/
-# Gerado pelo "prisma generate" (roda sozinho no npm install)
 src/generated/

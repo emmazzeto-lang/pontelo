@@ -4,7 +4,6 @@ import { descreverHorarioHoje, formatarHora, intervaloAberto, momentoEmSaoPaulo,
 const SEGUNDA = 1
 const as = (hora: number, minuto = 0) => hora * 60 + minuto
 
-// Segunda a sexta, das 11h às 14h
 const almoco: Horario[] = [1, 2, 3, 4, 5].map((dia_semana) => ({ dia_semana, abre: '11:00', fecha: '14:00' }))
 
 describe('intervaloAberto', () => {

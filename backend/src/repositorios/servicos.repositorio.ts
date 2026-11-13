@@ -2,7 +2,6 @@ import { Prisma } from '../generated/prisma/client.js'
 import { banco } from '../plugins/banco.js'
 import type { Horario } from '../servicos/horarios.js'
 
-// Linha crua vinda do banco, antes de virar resposta da API
 export type LinhaServico = {
   id: string
   nome: string
@@ -31,8 +30,6 @@ type FiltroProximos = {
   categoria?: string | undefined
 }
 
-// Consulta principal da documentação (seção 6): serviços publicados dentro do raio, do mais perto ao mais longe.
-// Atenção: ST_MakePoint recebe LONGITUDE primeiro.
 export async function buscarProximos({ lat, lng, raioM, categoria }: FiltroProximos) {
   const filtroCategoria = categoria ? Prisma.sql`AND c.slug = ${categoria}` : Prisma.empty
 
@@ -64,7 +61,6 @@ export async function buscarPublicadoPorId(id: string) {
   return linhas[0] ?? null
 }
 
-// O banco guarda TIME, e o Prisma devolve como data em 1970-01-01 (UTC)
 const hhmm = (data: Date) => data.toISOString().slice(11, 16)
 
 export async function horariosDosServicos(ids: string[]) {
@@ -97,7 +93,6 @@ export async function listarCategorias() {
   return banco.categorias.findMany({ select: { slug: true, nome: true }, orderBy: { id: 'asc' } })
 }
 
-// Já confirmou este serviço nas últimas 24 horas?
 export async function confirmouRecentemente(servicoId: string, usuarioId: string) {
   const total = await banco.verificacoes.count({
     where: {
@@ -110,7 +105,6 @@ export async function confirmouRecentemente(servicoId: string, usuarioId: string
   return total > 0
 }
 
-// O gatilho trg_verificacoes_atualiza_servico (schema.sql) atualiza servicos.ultima_verificacao_em sozinho
 export async function criarConfirmacao(servicoId: string, usuarioId: string) {
   const verificacao = await banco.verificacoes.create({
     data: { servico_id: servicoId, usuario_id: usuarioId, tipo: 'confirmacao', resultado: 'confirmado' },
@@ -134,7 +128,6 @@ type LinhaDadosAbertos = {
   lng: number
 }
 
-// Dados abertos: usa a view pública do schema.sql e deixa de fora quem tem endereço sigiloso
 export function servicosParaDadosAbertos() {
   return banco.$queryRaw<LinhaDadosAbertos[]>`
     SELECT id, nome, categoria_slug AS categoria, endereco, cidade, uf, cep, telefone, documentos_exigidos,

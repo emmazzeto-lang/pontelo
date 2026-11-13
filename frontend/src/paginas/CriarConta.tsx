@@ -9,7 +9,6 @@ import { destinoDepoisDoLogin, mensagemDeFalha } from '../utils/conta'
 
 type Erros = Partial<Record<'nome' | 'email' | 'senha' | 'aceite_privacidade', string>>
 
-// As mesmas regras da API, conferidas antes de enviar para a pessoa não esperar à toa
 function validar(nome: string, email: string, senha: string, aceite: boolean): Erros {
   const erros: Erros = {}
   if (nome.trim().length < 2) erros.nome = 'Informe seu nome ou um apelido.'
@@ -19,7 +18,6 @@ function validar(nome: string, email: string, senha: string, aceite: boolean): E
   return erros
 }
 
-// Erros por campo que vieram da API (VALIDACAO_FALHOU)
 function errosDaApi(erro: Error | null): Erros {
   if (erro instanceof ErroApi && erro.codigo === 'EMAIL_EM_USO') return { email: erro.message }
   if (!(erro instanceof ErroApi) || erro.codigo !== 'VALIDACAO_FALHOU') return {}

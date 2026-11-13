@@ -1,8 +1,6 @@
 import type { ReactElement } from 'react'
 
-// Cada ícone recebe a cor principal (a) e a cor de destaque (b)
 const desenhos = {
-  // Categorias: duas cores (a = principal, b = destaque dourado)
   abrigo: (a: string, b: string) => (
     <>
       <path d="M12 2.5 22 10.6V21a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V10.6Z" fill={a} />
@@ -42,13 +40,11 @@ const desenhos = {
   ),
   documentos: (a: string, b: string) => (
     <>
-      <path d="M5 2h9.5L20 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" fill={a} />
+      <path d="M5 2h9.5L20 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1-2-2Z" fill={a} />
       <rect x="6.5" y="11" width="10" height="2.2" rx="1.1" fill={b} />
       <rect x="6.5" y="15.5" width="6.5" height="2.2" rx="1.1" fill={b} />
     </>
   ),
-
-  // Ações: uma cor só, para funcionar dentro dos botões
   telefone: (a: string) => (
     <path
       d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
@@ -110,8 +106,6 @@ const desenhos = {
   confirmar: (a: string) => (
     <path d="M4 12.5 9.5 18 20 6.5" stroke={a} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
   ),
-
-  // Selo do elo
   elo: (a: string) => (
     <>
       <rect x="3.2" y="11.6" width="11.6" height="6.8" rx="3.4" transform="rotate(-45 9 15)" stroke={a} strokeWidth={2.4} />
@@ -124,8 +118,6 @@ const desenhos = {
       <path d="M15.6 4.6l1.2-1.2a3.4 3.4 0 0 1 4.8 4.8l-1.2 1.2" stroke={a} strokeWidth={2.4} strokeLinecap="round" />
     </>
   ),
-
-  // Cabeçalho
   usuario: (a: string, b: string) => (
     <>
       <circle cx="12" cy="7" r="4.5" fill={b} />
@@ -135,7 +127,6 @@ const desenhos = {
   mais: (a: string) => (
     <path d="M12 6v12M6 12h12" stroke={a} strokeWidth={3.2} strokeLinecap="round" />
   ),
-  // Três linhas de larguras diferentes, menos "ícone padrão" que o hambúrguer igual
   menu: (a: string, b: string) => (
     <>
       <path d="M4 6.5h16M4 12h16" stroke={a} strokeWidth={2.6} strokeLinecap="round" />

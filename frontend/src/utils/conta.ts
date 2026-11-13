@@ -1,10 +1,8 @@
 import { ErroApi } from '../servicos/api'
 
-// Para onde voltar depois de entrar. Vem do estado da navegação, nunca do endereço (evita redirecionar para fora do site).
 export function destinoDepoisDoLogin(estado: unknown) {
   const de = (estado as { de?: unknown } | null)?.de
   const valido = typeof de === 'string' && de.startsWith('/') && !de.startsWith('//')
-  // Voltar para a própria página de login não faria sentido
   return valido && !['/entrar', '/criar-conta'].includes(de) ? de : '/'
 }
 

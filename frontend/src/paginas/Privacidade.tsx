@@ -3,7 +3,6 @@ import PaginaTexto, { Topico } from '../componentes/PaginaTexto'
 
 const link = 'font-semibold text-azul underline underline-offset-4'
 
-// Política de privacidade em linguagem simples (LGPD, Lei nº 13.709/2018; seção 8 da documentação)
 export default function Privacidade() {
   return (
     <PaginaTexto

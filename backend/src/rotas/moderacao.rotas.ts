@@ -7,7 +7,6 @@ import * as moderacao from '../servicos/moderacao.servico.js'
 const erros = { 401: erroResposta, 403: erroResposta }
 const docs = { tags: ['Moderação'], security: [{ bearer: [] }] }
 
-// Só quem tem papel "moderador" passa daqui
 export const rotasModeracao: FastifyPluginAsyncZod = async (app) => {
   app.addHook('preHandler', exigirPapel('moderador'))
 
