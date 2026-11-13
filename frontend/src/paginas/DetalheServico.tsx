@@ -6,7 +6,9 @@ import Icone from '../componentes/Icone'
 import LimiteErroMapa from '../componentes/LimiteErroMapa'
 import SeloConfianca from '../componentes/SeloConfianca'
 import { categoriaPorSlug } from '../dados/categorias'
-import { buscarDetalheExemplo } from '../dados/detalhesExemplo'
+import MensagemErro from '../componentes/MensagemErro'
+import { useServico } from '../hooks/useServicos'
+import { ErroApi } from '../servicos/api'
 import { cores } from '../estilos/cores'
 import type { Horario, ServicoDetalhe } from '../servicos/tipos'
 import { formatarDistancia, formatarHora, linkDeRota } from '../utils/formatar'
@@ -16,12 +18,29 @@ import type React from 'react'
 const MapaServicos = lazy(() => import('../componentes/MapaServicos'))
 
 export default function DetalheServico() {
-  const { id } = useParams()
-  const servico = id ? buscarDetalheExemplo(id) : null
+  const { id = '' } = useParams()
+  const consulta = useServico(id)
 
-  if (!servico) return <NaoEncontrada />
+  if (consulta.isPending) {
+    return (
+      <div className="conteudo py-10">
+        <p role="status" className="text-ardosia">Carregando o serviço…</p>
+      </div>
+    )
+  }
 
-  return <Conteudo servico={servico} />
+  if (consulta.isError) {
+    if (consulta.error instanceof ErroApi && consulta.error.status === 404) {
+      return <NaoEncontrada />
+    }
+    return (
+      <div className="conteudo py-10">
+        <MensagemErro titulo="Não conseguimos abrir este serviço" erro={consulta.error} aoTentarDeNovo={() => consulta.refetch()} />
+      </div>
+    )
+  }
+
+  return <Conteudo servico={consulta.data} />
 }
 
 function Conteudo({ servico }: { servico: ServicoDetalhe }) {

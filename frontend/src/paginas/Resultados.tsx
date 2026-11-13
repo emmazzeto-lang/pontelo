@@ -4,17 +4,19 @@ import CaixaBusca from '../componentes/CaixaBusca'
 import CardServico from '../componentes/CardServico'
 import Chip from '../componentes/Chip'
 import Icone from '../componentes/Icone'
+import LimiteErroMapa from '../componentes/LimiteErroMapa'
+import MensagemErro from '../componentes/MensagemErro'
+import TelefonesUrgentes from '../componentes/TelefonesUrgentes'
 import { Botao } from '../componentes/Botao'
 import { categoriaPorSlug } from '../dados/categorias'
-import { servicosExemplo } from '../dados/servicosExemplo'
-import { telefonesEmergencia } from '../dados/telefones'
 import { cores } from '../estilos/cores'
-import { filtrarServicos } from '../servicos/filtrar'
+import { useServicos } from '../hooks/useServicos'
+import { foiConferido } from '../servicos/filtrar'
 import type { Busca, Categoria, Local } from '../servicos/tipos'
-import LimiteErroMapa from '../componentes/LimiteErroMapa'
 
 // Só baixa o mapa quando a pessoa abrir a visão de mapa
 const MapaServicos = lazy(() => import('../componentes/MapaServicos'))
+
 const RAIO_PERTO = 3000
 const RAIO_LONGE = 10000
 
@@ -51,12 +53,13 @@ function descreverLocal(local: Local) {
 type ListaProps = { local: Local; categoria: Categoria | null }
 
 function ListaResultados({ local, categoria }: ListaProps) {
-  const [visao, setVisao] = useState<'lista' | 'mapa'>('lista')
+  const [visao, setVisao] = useState<Visao>('lista')
   const [raioM, setRaioM] = useState(RAIO_PERTO)
   const [abertoAgora, setAbertoAgora] = useState(false)
   const [soConferidos, setSoConferidos] = useState(false)
 
-  const servicos = filtrarServicos(servicosExemplo, { categoria, raioM, abertoAgora, soConferidos })
+  const consulta = useServicos({ local, categoria, raioM, abertoAgora })
+  const servicos = (consulta.data ?? []).filter((s) => !soConferidos || foiConferido(s))
   const voltar: Busca = { local: null, categoria }
 
   return (
@@ -94,56 +97,82 @@ function ListaResultados({ local, categoria }: ListaProps) {
         <AlternarVisao visao={visao} aoMudar={setVisao} />
       </div>
 
-      <p role="status" className="mt-6 text-sm font-semibold text-ardosia">
-        {servicos.length === 1 ? '1 serviço encontrado' : `${servicos.length} serviços encontrados`}
-      </p>
-
-      {servicos.length === 0 ? (
-        <SemResultados
-          local={local}
-          raioM={raioM}
-          abertoAgora={abertoAgora}
-          soConferidos={soConferidos}
-          aumentarRaio={() => setRaioM(RAIO_LONGE)}
-          mostrarFechados={() => setAbertoAgora(false)}
-          mostrarNaoConferidos={() => setSoConferidos(false)}
+      {consulta.isPending ? (
+        <Carregando />
+      ) : consulta.isError ? (
+        <MensagemErro
+          titulo="Não conseguimos buscar os serviços"
+          erro={consulta.error}
+          aoTentarDeNovo={() => consulta.refetch()}
+          mostrarTelefones
         />
-      ) : visao === 'lista' ? (
-        <>
-          <h2 className="sr-only">Lista de serviços</h2>
-          <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {servicos.map((s) => (
-              <CardServico key={s.id} servico={s} />
-            ))}
-          </div>
+      ) : (
+        <div aria-busy={consulta.isFetching} className={`transition-opacity ${consulta.isFetching ? 'opacity-60' : ''}`}>
+          <p role="status" className="mt-6 text-sm font-semibold text-ardosia">
+            {servicos.length === 1 ? '1 serviço encontrado' : `${servicos.length} serviços encontrados`}
+          </p>
 
-          {raioM === RAIO_PERTO && (
-            <div className="mt-10 grid justify-items-center gap-2 border-t border-nevoa pt-8 text-center">
-              <h2 className="text-lg">Não achou o que precisava?</h2>
-              <p className="text-ardosia">Aumente a distância da busca ou tente outra categoria.</p>
-              <Botao variante="suave" className="mt-2" onClick={() => setRaioM(RAIO_LONGE)}>
-                Buscar em até 10 km
-              </Botao>
+          {servicos.length === 0 ? (
+            <SemResultados
+              local={local}
+              raioM={raioM}
+              abertoAgora={abertoAgora}
+              soConferidos={soConferidos}
+              aumentarRaio={() => setRaioM(RAIO_LONGE)}
+              mostrarFechados={() => setAbertoAgora(false)}
+              mostrarNaoConferidos={() => setSoConferidos(false)}
+            />
+          ) : visao === 'lista' ? (
+            <>
+              <h2 className="sr-only">Lista de serviços</h2>
+              <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {servicos.map((s) => (
+                  <CardServico key={s.id} servico={s} />
+                ))}
+              </div>
+
+              {raioM === RAIO_PERTO && (
+                <div className="mt-10 grid justify-items-center gap-2 border-t border-nevoa pt-8 text-center">
+                  <h2 className="text-lg">Não achou o que precisava?</h2>
+                  <p className="text-ardosia">Aumente a distância da busca ou tente outra categoria.</p>
+                  <Botao variante="suave" className="mt-2" onClick={() => setRaioM(RAIO_LONGE)}>
+                    Buscar em até 10 km
+                  </Botao>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="mt-4">
+              <h2 className="sr-only">Mapa de serviços</h2>
+              <LimiteErroMapa aoVoltarParaLista={() => setVisao('lista')}>
+                <Suspense
+                  fallback={
+                    <div role="status" className="grid min-h-80 place-items-center rounded-2xl border border-nevoa bg-white p-6 text-ardosia">
+                      Carregando o mapa…
+                    </div>
+                  }
+                >
+                  <MapaServicos servicos={servicos} local={local} />
+                </Suspense>
+              </LimiteErroMapa>
             </div>
           )}
-        </>
-      ) : (
-        <div className="mt-4">
-          <h2 className="sr-only">Mapa de serviços</h2>
-          <LimiteErroMapa aoVoltarParaLista={() => setVisao('lista')}>
-            <Suspense
-               fallback={
-                <div role="status" className="grid min-h-80 place-items-center rounded-2xl border border-nevoa bg-white p-6 text-ardosia">
-                  Carregando o mapa…
-                </div>
-      }
-    >
-      <MapaServicos servicos={servicos} local={local} />
-    </Suspense>
-  </LimiteErroMapa>
-</div>
+        </div>
       )}
     </section>
+  )
+}
+
+function Carregando() {
+  return (
+    <div className="mt-6">
+      <p role="status" className="text-sm font-semibold text-ardosia">Buscando serviços perto de você…</p>
+      <div aria-hidden="true" className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="h-64 animate-pulse rounded-2xl border border-nevoa bg-white motion-reduce:animate-none" />
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -202,19 +231,7 @@ function SemResultados(props: SemResultadosProps) {
         </Link>
       </div>
 
-      <div className="mt-6 border-t border-nevoa pt-5">
-        <h3 className="text-lg">Se for urgente, ligue:</h3>
-        <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
-          {telefonesEmergencia.map((t) => (
-            <li key={t.numero}>
-              <a href={`tel:${t.numero}`} className="inline-flex min-h-11 items-center gap-2 hover:underline">
-                <span className="font-titulo text-xl font-extrabold text-azul">{t.numero}</span>
-                {t.nome}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <TelefonesUrgentes />
     </div>
   )
 }

@@ -5,7 +5,7 @@ export const servicosExemplo: Servico[] = [
   {
     id: '1',
     nome: 'Cozinha Comunitária Esperança',
-    categoria: 'refeicao',
+    categoria: 'refeitorio',
     distancia_m: 847,
     aberto_agora: true,
     horario_hoje: 'fecha às 14h',
@@ -17,7 +17,7 @@ export const servicosExemplo: Servico[] = [
   {
     id: '2',
     nome: 'Refeitório Solidário São José',
-    categoria: 'refeicao',
+    categoria: 'refeitorio',
     distancia_m: 1240,
     aberto_agora: true,
     horario_hoje: 'fecha às 15h',
@@ -29,7 +29,7 @@ export const servicosExemplo: Servico[] = [
   {
     id: '3',
     nome: 'Banco de Alimentos Mãos Unidas',
-    categoria: 'refeicao',
+    categoria: 'refeitorio',
     distancia_m: 2600,
     aberto_agora: false,
     horario_hoje: 'abre amanhã às 8h',
@@ -101,7 +101,7 @@ export const servicosExemplo: Servico[] = [
   {
     id: '9',
     nome: 'Cozinha Solidária Vila Esperança',
-    categoria: 'refeicao',
+    categoria: 'refeitorio',
     distancia_m: 7800,
     aberto_agora: true,
     horario_hoje: 'fecha às 13h',

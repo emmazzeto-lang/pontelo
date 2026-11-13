@@ -11,7 +11,7 @@ export type InfoCategoria = {
 
 export const categorias: InfoCategoria[] = [
   { slug: 'abrigo', nome: 'Abrigo', nomeCurto: 'Abrigo', icone: 'abrigo', descricao: 'Lugar seguro para dormir e se proteger, por uma noite ou mais.' },
-  { slug: 'refeicao', nome: 'Refeição', nomeCurto: 'Refeição', icone: 'refeicao', descricao: 'Refeitórios, cozinhas comunitárias e bancos de alimentos.' },
+  { slug: 'refeitorio', nome: 'Refeição', nomeCurto: 'Refeição', icone: 'refeicao', descricao: 'Refeitórios, cozinhas comunitárias e bancos de alimentos.' },
   { slug: 'juridico', nome: 'Atendimento jurídico', nomeCurto: 'Jurídico', icone: 'juridico', descricao: 'Defensoria pública e orientação gratuita sobre seus direitos.' },
   { slug: 'saude', nome: 'Saúde e vacinação', nomeCurto: 'Saúde', icone: 'saude', descricao: 'Unidades básicas de saúde, vacinação e atendimento gratuito.' },
   { slug: 'cras', nome: 'CRAS', nomeCurto: 'CRAS', icone: 'cras', descricao: 'Centro de Referência de Assistência Social: benefícios e acompanhamento.' },

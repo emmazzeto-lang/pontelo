@@ -1,4 +1,4 @@
-export type Categoria = 'abrigo' | 'refeicao' | 'juridico' | 'saude' | 'cras' | 'documentos'
+export type Categoria = 'abrigo' | 'refeitorio' | 'juridico' | 'saude' | 'cras' | 'documentos'
 
 // Mesmo formato da resposta de GET /servicos (seção 7 da documentação)
 export type Servico = {
