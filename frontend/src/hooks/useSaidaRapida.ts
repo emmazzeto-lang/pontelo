@@ -1,9 +1,12 @@
 import { useEffect } from 'react'
+import { sairSemEsperar } from '../servicos/api'
 
 // Página neutra para onde a pessoa vai ao sair
 const ENDERECO_NEUTRO = 'https://www.google.com/search?q=previsao+do+tempo'
 
 export function sairRapido() {
+  // Encerra a conta neste aparelho: quem abrir o site depois não entra logado como a pessoa
+  sairSemEsperar()
   try {
     sessionStorage.clear()
   } catch {

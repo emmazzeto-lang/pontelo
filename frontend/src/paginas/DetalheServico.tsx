@@ -1,5 +1,6 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import Denuncia from '../componentes/Denuncia'
 import Icone from '../componentes/Icone'
@@ -8,7 +9,8 @@ import SeloConfianca from '../componentes/SeloConfianca'
 import { categoriaPorSlug } from '../dados/categorias'
 import MensagemErro from '../componentes/MensagemErro'
 import { useServico } from '../hooks/useServicos'
-import { ErroApi } from '../servicos/api'
+import { confirmarServico, ErroApi } from '../servicos/api'
+import { useSessao } from '../servicos/sessao'
 import { cores } from '../estilos/cores'
 import type { Horario, ServicoDetalhe } from '../servicos/tipos'
 import { formatarDistancia, formatarHora, linkDeRota } from '../utils/formatar'
@@ -44,7 +46,6 @@ export default function DetalheServico() {
 }
 
 function Conteudo({ servico }: { servico: ServicoDetalhe }) {
-  const [confirmado, setConfirmado] = useState(false)
   const categoria = categoriaPorSlug[servico.categoria]
   const rota = servico.localizacao ? linkDeRota(servico.localizacao.lat, servico.localizacao.lng) : null
 
@@ -60,7 +61,7 @@ function Conteudo({ servico }: { servico: ServicoDetalhe }) {
         </p>
         <h1 className="mt-2 max-w-[22ch] text-[clamp(1.875rem,4.5vw,3rem)]">{servico.nome}</h1>
         <div className="mt-3">
-          <SeloConfianca ultimaVerificacao={confirmado ? new Date().toISOString() : servico.ultima_verificacao_em} />
+          <SeloConfianca ultimaVerificacao={servico.ultima_verificacao_em} />
         </div>
         <p className="mt-3 max-w-2xl text-lg text-ardosia">{servico.descricao}</p>
       </header>
@@ -102,14 +103,7 @@ function Conteudo({ servico }: { servico: ServicoDetalhe }) {
             <p className="mb-3 text-ardosia">
               Se você esteve lá ou ligou recentemente, sua confirmação ajuda a próxima pessoa.
             </p>
-            {!confirmado && (
-              <Botao variante="confirmar" icone="confirmar" onClick={() => setConfirmado(true)}>
-                Confirmo que ainda funciona
-              </Botao>
-            )}
-            <div role="status">
-              {confirmado && <p className="font-semibold text-verificado">Obrigado! Você é mais um elo dessa ponte.</p>}
-            </div>
+            <ConfirmarFuncionamento servicoId={servico.id} />
           </Secao>
 
           <div className="border-t border-nevoa pt-5">
@@ -118,6 +112,56 @@ function Conteudo({ servico }: { servico: ServicoDetalhe }) {
         </div>
       </div>
     </div>
+  )
+}
+
+// "Confirmo que ainda funciona": exige conta, para a confirmação ter alguém responsável por ela
+function ConfirmarFuncionamento({ servicoId }: { servicoId: string }) {
+  const sessao = useSessao()
+  const { pathname } = useLocation()
+  const clienteConsultas = useQueryClient()
+
+  const envio = useMutation({
+    mutationFn: () => confirmarServico(servicoId),
+    onSuccess: (ultimaVerificacao) => {
+      // Atualiza o selo desta página na hora e faz as listas buscarem de novo
+      clienteConsultas.setQueryData<ServicoDetalhe>(['servico', servicoId], (atual) =>
+        atual && { ...atual, ultima_verificacao_em: ultimaVerificacao },
+      )
+      void clienteConsultas.invalidateQueries({ queryKey: ['servicos'] })
+    },
+  })
+
+  if (sessao.status === 'carregando') return null
+
+  if (sessao.status === 'anonimo') {
+    return (
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <BotaoLink para="/entrar" estado={{ de: pathname }} variante="confirmar" icone="confirmar">
+          Entrar para confirmar
+        </BotaoLink>
+        <span className="text-sm text-ardosia">Leva menos de um minuto.</span>
+      </div>
+    )
+  }
+
+  const jaConfirmou = envio.error instanceof ErroApi && envio.error.codigo === 'CONFIRMACAO_RECENTE'
+
+  return (
+    <>
+      {!envio.isSuccess && !jaConfirmou && (
+        <Botao variante="confirmar" icone="confirmar" disabled={envio.isPending} onClick={() => envio.mutate()}>
+          {envio.isPending ? 'Enviando…' : 'Confirmo que ainda funciona'}
+        </Botao>
+      )}
+      <div role="status">
+        {envio.isSuccess && <p className="font-semibold text-verificado">Obrigado! Você é mais um elo dessa ponte.</p>}
+        {jaConfirmou && <p className="font-semibold text-verificado">{envio.error.message}</p>}
+        {envio.isError && !jaConfirmou && (
+          <p className="mt-2 font-medium text-erro">Não conseguimos registrar agora. Tente de novo em alguns minutos.</p>
+        )}
+      </div>
+    </>
   )
 }
 

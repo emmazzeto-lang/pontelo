@@ -61,15 +61,17 @@ type BotaoLinkProps = Estilo & {
   children: ReactNode
   className?: string
   novaAba?: boolean
+  // Só para "para": dados que a próxima página recebe sem aparecer no endereço
+  estado?: unknown
 } & ({ para: string; href?: undefined } | { href: string; para?: undefined })
 
 export function BotaoLink(props: BotaoLinkProps) {
-  const { variante, tamanho, larguraTotal, icone, className, children, novaAba } = props
+  const { variante, tamanho, larguraTotal, icone, className, children, novaAba, estado } = props
   const classes = montarClasses({ variante, tamanho, larguraTotal }, className)
   const conteudo = <Conteudo icone={icone} tamanho={tamanho}>{children}</Conteudo>
 
   if (props.para !== undefined) {
-    return <Link to={props.para} className={classes}>{conteudo}</Link>
+    return <Link to={props.para} state={estado} className={classes}>{conteudo}</Link>
   }
 
   return (
