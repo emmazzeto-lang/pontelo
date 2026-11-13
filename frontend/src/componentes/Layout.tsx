@@ -1,4 +1,5 @@
-import { Outlet } from 'react-router'
+import { Suspense, useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router'
 import BarraEmergencia from './BarraEmergencia'
 import Cabecalho from './Cabecalho'
 import Rodape from './Rodape'
@@ -6,6 +7,12 @@ import { useAtalhoSaidaRapida } from '../hooks/useSaidaRapida'
 
 export default function Layout() {
   useAtalhoSaidaRapida()
+
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -20,7 +27,11 @@ export default function Layout() {
       <Cabecalho />
 
       <main id="conteudo" className="flex-1">
-        <Outlet />
+        {/* Enquanto a página é baixada (só na primeira vez que alguém abre) */}
+        {/* min-h: reserva a altura da página para o rodapé não "pular" quando ela chegar */}
+        <Suspense fallback={<p role="status" className="conteudo min-h-screen py-10 text-ardosia">Carregando…</p>}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <Rodape />

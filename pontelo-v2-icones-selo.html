@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pontelo v2 · ícones e selo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marinho:#13365D;--azul:#1F5F94;--dourado:#E8C35E;--dourado-escuro:#D4A62A;
+  --areia:#F8F5EE;--branco:#FFFFFF;--ardosia:#4A5A6E;--nevoa:#D9DEE5;
+  --verificado:#2E7D5B;--a-confirmar:#9A6700;--erro:#B3261E;--azul-claro:#E8F0F7;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--areia);color:var(--marinho);font:16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--dourado);color:var(--marinho)}
+h1,h2,h3{font-family:Nunito,Inter,sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.wrap{max-width:1200px;margin:0 auto;padding:72px 24px}
+h1{font-size:clamp(2rem,4vw,3rem);max-width:18ch}
+.lead{color:var(--ardosia);font-size:1.125rem;max-width:60ch;margin-top:14px}
+section{padding-top:72px}
+h2{font-size:clamp(1.6rem,3vw,2.25rem);margin-bottom:8px}
+.note{color:var(--ardosia);max-width:62ch;margin-bottom:28px}
+.compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.panel{background:var(--branco);border:1px solid var(--nevoa);border-radius:20px;padding:28px}
+.tag{font:600 13px Inter;color:var(--ardosia);margin-bottom:18px}
+.icons{display:flex;flex-wrap:wrap;gap:28px 36px;align-items:flex-end}
+.icons figure{display:grid;justify-items:center;gap:8px;font-size:13px;color:var(--ardosia)}
+.icons svg{width:44px;height:44px}
+.dark{background:var(--marinho);border-color:var(--marinho)}
+.dark figure{color:var(--nevoa)}
+.util svg{width:28px;height:28px}
+.pill-old{display:inline-flex;align-items:center;gap:6px;background:#E6F2EC;color:var(--verificado);font:600 13px Inter;padding:5px 12px;border-radius:999px}
+.pill-old svg{width:14px;height:14px}
+.seal{display:inline-flex;align-items:center;gap:7px;font:600 14px Inter}
+.seal svg{width:20px;height:20px;flex:none}
+.seal.ok{color:var(--verificado)} .seal.old{color:var(--a-confirmar)}
+.seal-rows{display:grid;gap:18px}
+.seal-rows p{color:var(--ardosia);font-size:15px;margin-top:2px}
+.card{background:var(--branco);border:1px solid var(--nevoa);border-radius:16px;padding:20px;display:grid;gap:14px;max-width:420px}
+.card .top{display:flex;gap:12px;align-items:flex-start}
+.card .top svg{width:30px;height:30px;flex:none;margin-top:2px}
+.card h3{font-size:19px;font-weight:700;letter-spacing:-.01em}
+.card small{color:var(--ardosia);font-size:14px}
+.meta{display:grid;gap:8px;font-size:14px}
+.meta span{display:flex;gap:8px;align-items:center}
+.meta svg{width:16px;height:16px}
+.open{color:var(--verificado);font-weight:500} .muted{color:var(--ardosia)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;border-radius:12px;font:600 16px Inter;border:2px solid transparent;cursor:pointer}
+.btn svg{width:20px;height:20px}
+.btn.primary{background:var(--azul);color:#fff}
+.btn.outline{border-color:var(--marinho);color:var(--marinho);background:none}
+.btn.danger{background:var(--erro);color:#fff;font-size:14px;min-height:40px}
+.btn:focus-visible{outline:3px solid var(--dourado);outline-offset:3px}
+kbd{font:700 11px Inter;border:1px solid rgba(255,255,255,.6);border-radius:5px;padding:1px 6px}
+.index{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));column-gap:40px;background:var(--branco);border-radius:20px;padding:12px 32px 8px}
+.index a{display:flex;gap:20px;padding:28px 0 32px;border-top:1px solid rgba(19,54,93,.2);color:inherit;text-decoration:none}
+.index svg{width:38px;height:38px;flex:none}
+.index h3{font-size:24px;margin-bottom:6px}
+.index p{color:var(--ardosia);font-size:16px}
+.index u{display:inline-block;margin-top:10px;color:var(--azul);font-weight:600;font-size:15px;text-underline-offset:3px}
+.index a:hover h3{color:var(--azul)}
+.track{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px 0}
+.step .line{display:flex;align-items:center}
+.step .num{width:48px;height:48px;border-radius:50%;background:var(--marinho);color:#fff;display:grid;place-items:center;font:800 20px Nunito;flex:none}
+.step:last-child .num{background:var(--dourado);color:var(--marinho)}
+.step .bar{height:4px;border-radius:2px;background:var(--dourado-escuro);flex:1;margin-right:-1px}
+.step:last-child .bar{display:none}
+.step h3{font-size:24px;margin:20px 0 8px;padding-right:32px}
+.step p{color:var(--ardosia);padding-right:32px}
+@media (max-width:640px){.wrap{padding:48px 16px}.index{padding:4px 20px}.actions{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="home" viewBox="0 0 24 24"><path d="M12 2.5 22 10.6V21a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V10.6Z" fill="var(--a)"/><path d="M9.5 22v-5.5a2.5 2.5 0 0 1 5 0V22Z" fill="var(--b)"/></symbol>
+    <symbol id="food" viewBox="0 0 24 24"><circle cx="12" cy="6.5" r="3.2" fill="var(--b)"/><path d="M2 11h20a10 9 0 0 1-20 0Z" fill="var(--a)"/><rect x="6" y="19.5" width="12" height="2.8" rx="1.4" fill="var(--a)"/></symbol>
+    <symbol id="scale" viewBox="0 0 24 24"><rect x="10.9" y="3" width="2.2" height="16.5" rx="1.1" fill="var(--a)"/><rect x="6" y="19" width="12" height="3" rx="1.5" fill="var(--a)"/><rect x="3" y="6" width="18" height="2.4" rx="1.2" fill="var(--a)"/><path d="M8.6 13H1.4a3.6 3.6 0 0 0 7.2 0Z" fill="var(--b)"/><path d="M22.6 13h-7.2a3.6 3.6 0 0 0 7.2 0Z" fill="var(--b)"/></symbol>
+    <symbol id="health" viewBox="0 0 24 24"><rect x="8.5" y="2.5" width="7" height="19" rx="2.5" fill="var(--a)"/><rect x="2.5" y="8.5" width="19" height="7" rx="2.5" fill="var(--a)"/><circle cx="12" cy="12" r="2.3" fill="var(--b)"/></symbol>
+    <symbol id="people" viewBox="0 0 24 24"><circle cx="16.5" cy="6.5" r="3.5" fill="var(--b)"/><path d="M10 21.5a6.5 7 0 0 1 13 0Z" fill="var(--b)"/><circle cx="8" cy="6.5" r="3.5" fill="var(--a)"/><path d="M1 21.5a7 7.5 0 0 1 14 0Z" fill="var(--a)"/></symbol>
+    <symbol id="doc" viewBox="0 0 24 24"><path d="M5 2h9.5L20 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" fill="var(--a)"/><rect x="6.5" y="11" width="10" height="2.2" rx="1.1" fill="var(--b)"/><rect x="6.5" y="15.5" width="6.5" height="2.2" rx="1.1" fill="var(--b)"/></symbol>
+    <symbol id="phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="currentColor"/></symbol>
+    <symbol id="pin" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 1.5A8.5 8.5 0 0 0 3.5 10c0 6 8.5 12.5 8.5 12.5S20.5 16 20.5 10A8.5 8.5 0 0 0 12 1.5Zm0 11.6a3.1 3.1 0 1 0 0-6.2 3.1 3.1 0 0 0 0 6.2Z" fill="currentColor"/></symbol>
+    <symbol id="nav" viewBox="0 0 24 24"><path d="M21.5 2.5 2.5 10.6l8.2 2.7 2.7 8.2Z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="clock" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21Zm1.2 5a1.2 1.2 0 0 0-2.4 0V12c0 .4.2.8.6 1l3.6 2.4a1.2 1.2 0 0 0 1.3-2l-3.1-2Z" fill="currentColor"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7" fill="none" stroke="currentColor" stroke-width="3"/><path d="m16 16 5.5 5.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></symbol>
+    <symbol id="locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+    <symbol id="flag" viewBox="0 0 24 24"><path d="M3.6 2.5h1.6V22H3.6a.8.8 0 0 1-.8-.8V3.3a.8.8 0 0 1 .8-.8Z" fill="currentColor"/><path d="M6 3.5c4-2 7 2 11 0 1.4-.7 3 0 3 0v10s-1.6-.7-3 0c-4 2-7-2-11 0Z" fill="currentColor"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="link" viewBox="0 0 24 24"><rect x="3.2" y="11.6" width="11.6" height="6.8" rx="3.4" transform="rotate(-45 9 15)" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="9.2" y="5.6" width="11.6" height="6.8" rx="3.4" transform="rotate(-45 15 9)" fill="none" stroke="currentColor" stroke-width="2.4"/></symbol>
+    <symbol id="linkOpen" viewBox="0 0 24 24"><rect x="3.2" y="11.6" width="11.6" height="6.8" rx="3.4" transform="rotate(-45 9 15)" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.6 4.6l1.2-1.2a3.4 3.4 0 0 1 4.8 4.8l-1.2 1.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="lucideShield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<main class="wrap">
+  <h1>Pontelo v2: ícones próprios e selo do elo</h1>
+  <p class="lead">Mesma paleta, mesmo conteúdo e mesmas telas. Mudam os ícones, o selo e a forma das seções, que deixam de ser grades de cards iguais.</p>
+
+  <section>
+    <h2>O selo</h2>
+    <p class="note">Antes, o selo era um rótulo genérico dentro de uma pílula verde. Agora usa o elo da marca e diz quando o serviço foi conferido, que é a informação que importa para quem vai sair de casa.</p>
+    <div class="compare">
+      <div class="panel">
+        <p class="tag">Antes</p>
+        <span class="pill-old"><svg><use href="#lucideShield"/></svg>Verificado</span>
+      </div>
+      <div class="panel seal-rows">
+        <p class="tag" style="margin:0">Depois</p>
+        <div><span class="seal ok"><svg><use href="#link"/></svg>Conferido há 12 dias</span><p>Dois elos fechados: confirmado nos últimos 90 dias.</p></div>
+        <div><span class="seal old"><svg><use href="#linkOpen"/></svg>Sem conferência há 4 meses</span><p>Elo aberto: informação antiga, ligue antes de ir.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ícones desenhados para o Pontelo</h2>
+    <p class="note">Formas cheias e cantos redondos, como as letras da logo. O dourado entra como segunda cor e o ícone de CRAS repete as duas pessoas do símbolo. Os ícones de ação ficam numa cor só, para funcionar dentro dos botões.</p>
+    <div class="compare">
+      <div class="panel"><div class="icons" style="--a:var(--marinho);--b:var(--dourado-escuro)">
+        <figure><svg><use href="#home"/></svg>Abrigo</figure>
+        <figure><svg><use href="#food"/></svg>Refeição</figure>
+        <figure><svg><use href="#scale"/></svg>Jurídico</figure>
+        <figure><svg><use href="#health"/></svg>Saúde</figure>
+        <figure><svg><use href="#people"/></svg>CRAS</figure>
+        <figure><svg><use href="#doc"/></svg>Documentos</figure>
+      </div></div>
+      <div class="panel dark"><div class="icons" style="--a:#fff;--b:var(--dourado)">
+        <figure><svg><use href="#home"/></svg>Abrigo</figure>
+        <figure><svg><use href="#food"/></svg>Refeição</figure>
+        <figure><svg><use href="#scale"/></svg>Jurídico</figure>
+        <figure><svg><use href="#health"/></svg>Saúde</figure>
+        <figure><svg><use href="#people"/></svg>CRAS</figure>
+        <figure><svg><use href="#doc"/></svg>Documentos</figure>
+      </div></div>
+    </div>
+    <div class="panel util" style="margin-top:24px"><div class="icons" style="color:var(--marinho)">
+      <svg><use href="#phone"/></svg><svg><use href="#pin"/></svg><svg><use href="#nav"/></svg><svg><use href="#clock"/></svg><svg><use href="#search"/></svg><svg><use href="#locate"/></svg><svg><use href="#flag"/></svg><svg><use href="#check"/></svg>
+    </div></div>
+  </section>
+
+  <section>
+    <h2>Card de serviço</h2>
+    <p class="note">Sai a caixinha colorida atrás do ícone. O ícone fica solto, ao lado do nome, e o selo traz a data.</p>
+    <article class="card">
+      <div class="top"><svg style="--a:var(--marinho);--b:var(--dourado-escuro)"><use href="#food"/></svg>
+        <div><h3>Cozinha Comunitária Esperança</h3><small>Refeição · 850 m de você</small></div></div>
+      <div class="meta">
+        <span class="seal ok"><svg><use href="#link"/></svg>Conferido há 12 dias</span>
+        <span class="open"><svg><use href="#clock"/></svg>Aberto agora · fecha às 14h</span>
+        <span class="muted"><svg><use href="#pin"/></svg>Rua das Flores, 120 · Centro</span>
+      </div>
+      <div class="actions"><a class="btn primary" href="#"><svg><use href="#phone"/></svg>Ligar</a><a class="btn outline" href="#"><svg><use href="#nav"/></svg>Como chegar</a></div>
+    </article>
+    <p style="margin-top:20px"><a class="btn danger" href="#">Saída rápida <kbd>Esc</kbd></a></p>
+  </section>
+
+  <section>
+    <h2>Que tipo de ajuda você precisa?</h2>
+    <p class="note">As categorias deixam de ser seis cards iguais e viram um índice, como uma placa de serviço público, com a quantidade de lugares por perto.</p>
+    <nav class="index" style="--a:var(--marinho);--b:var(--dourado-escuro)">
+      <a href="#"><svg><use href="#home"/></svg><div><h3>Abrigo</h3><p>Lugar seguro para dormir e se proteger, por uma noite ou mais.</p><u>14 lugares perto de você</u></div></a>
+      <a href="#"><svg><use href="#food"/></svg><div><h3>Refeição</h3><p>Refeitórios, cozinhas comunitárias e bancos de alimentos.</p><u>23 lugares perto de você</u></div></a>
+      <a href="#"><svg><use href="#scale"/></svg><div><h3>Atendimento jurídico</h3><p>Defensoria pública e orientação gratuita sobre seus direitos.</p><u>6 lugares perto de você</u></div></a>
+      <a href="#"><svg><use href="#health"/></svg><div><h3>Saúde e vacinação</h3><p>Unidades básicas de saúde, vacinação e atendimento gratuito.</p><u>19 lugares perto de você</u></div></a>
+      <a href="#"><svg><use href="#people"/></svg><div><h3>CRAS</h3><p>Centro de Referência de Assistência Social: benefícios e acompanhamento.</p><u>4 lugares perto de você</u></div></a>
+      <a href="#"><svg><use href="#doc"/></svg><div><h3>Documentos</h3><p>Tirar RG, CPF, carteira de trabalho e segunda via.</p><u>5 lugares perto de você</u></div></a>
+    </nav>
+  </section>
+
+  <section>
+    <h2>Três passos até a ajuda certa</h2>
+    <p class="note">Os passos viram um trajeto ligado por uma linha, como uma ponte, no lugar de três cards soltos.</p>
+    <div class="track">
+      <div class="step"><div class="line"><span class="num">1</span><span class="bar"></span></div><h3>Diga onde você está</h3><p>Use o GPS, digite o CEP ou o nome da cidade. Sua localização não fica guardada.</p></div>
+      <div class="step"><div class="line"><span class="num">2</span><span class="bar"></span></div><h3>Escolha o tipo de ajuda</h3><p>Veja a lista pela distância. Use o filtro "aberto agora" se for urgente.</p></div>
+      <div class="step"><div class="line"><span class="num">3</span><span class="bar"></span></div><h3>Ligue ou vá até lá</h3><p>Botões grandes para ligar e traçar a rota. Endereço, horários e documentos num só lugar.</p></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

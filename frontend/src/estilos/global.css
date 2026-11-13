@@ -12,7 +12,7 @@
   --color-ardosia: #4a5a6e;
   --color-nevoa: #d9dee5;
   --color-azul-claro: #e8f0f7;
-  --color-verificado: #2e7d5b;
+  --color-verificado: #2a7354;
   --color-verde-claro: #e6f2ec;
   --color-a-confirmar: #9a6700;
   --color-erro: #b3261e;
@@ -21,29 +21,43 @@
   --font-texto: "Inter", system-ui, sans-serif;
 }
 
-body {
-  background: var(--color-areia);
-  color: var(--color-marinho);
-  font-family: var(--font-texto);
-  font-size: 16px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
+/* Largura padrão do conteúdo (a mesma do cabeçalho) */
+@utility conteudo {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1rem;
 }
 
-h1, h2, h3 {
-  font-family: var(--font-titulo);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+/* Tamanho dos títulos de seção: cresce com a tela, entre 28px e 44px */
+@utility titulo-secao {
+  font-size: clamp(1.75rem, 3.6vw, 2.75rem);
 }
 
-/* Detalhes que quase todo site esquece */
-::selection {
-  background: var(--color-dourado);
-  color: var(--color-marinho);
-}
+@layer base {
+  body {
+    background: var(--color-areia);
+    color: var(--color-marinho);
+    font-family: var(--font-texto);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
 
-:focus-visible {
-  outline: 3px solid var(--color-dourado);
-  outline-offset: 3px;
+  h1, h2, h3 {
+    font-family: var(--font-titulo);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: var(--color-dourado);
+    color: var(--color-marinho);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-dourado);
+    outline-offset: 3px;
+  }
 }

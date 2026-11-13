@@ -1,0 +1,22 @@
+.leaflet-container {
+  font-family: var(--font-texto);
+}
+
+/* Devolve as cores dos links e botões dentro do balão */
+.leaflet-popup-content a.text-marinho {
+  color: var(--color-marinho);
+}
+
+.leaflet-popup-content a.text-white {
+  color: #fff;
+}
+
+/* Marcador redondo com o ícone da categoria */
+.marcador-servico {
+  display: grid;
+  place-items: center;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: var(--color-azul);
+  box-shadow: 0 3px 8px rgb(19 54 93 / 0.35);
+}
