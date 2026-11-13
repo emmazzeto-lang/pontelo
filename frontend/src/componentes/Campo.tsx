@@ -6,6 +6,36 @@ type Props = Omit<ComponentProps<'input'>, 'id'> & {
   erro?: string
 }
 
+// Mesmo visual do Campo, para textos longos
+export function AreaTexto({
+  rotulo,
+  dica,
+  erro,
+  className = '',
+  ...area
+}: Omit<ComponentProps<'textarea'>, 'id'> & { rotulo: string; dica?: string; erro?: string }) {
+  const id = useId()
+  const descricao = [dica && `${id}-dica`, erro && `${id}-erro`].filter(Boolean).join(' ') || undefined
+
+  return (
+    <div className={className}>
+      <label htmlFor={id} className="font-semibold">
+        {rotulo}
+      </label>
+      <textarea
+        id={id}
+        rows={3}
+        aria-invalid={erro ? true : undefined}
+        aria-describedby={descricao}
+        className={`mt-1.5 block w-full rounded-xl border-[1.5px] bg-white p-3 ${erro ? 'border-erro' : 'border-ardosia'}`}
+        {...area}
+      />
+      {dica && <p id={`${id}-dica`} className="mt-1 text-sm text-ardosia">{dica}</p>}
+      {erro && <p id={`${id}-erro`} className="mt-1 text-sm font-medium text-erro">{erro}</p>}
+    </div>
+  )
+}
+
 // Campo de formulário com rótulo, dica e erro já ligados ao input para leitores de tela
 export default function Campo({ rotulo, dica, erro, className = '', ...input }: Props) {
   const id = useId()

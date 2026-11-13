@@ -17,6 +17,7 @@ import { config } from './config.js'
 import { ErroApi } from './erros.js'
 import { rotasAuth } from './rotas/auth.rotas.js'
 import { rotasColaboracao } from './rotas/colaboracao.rotas.js'
+import { rotasModeracao } from './rotas/moderacao.rotas.js'
 import { rotasPublicas } from './rotas/publicas.rotas.js'
 
 // Mensagens de validação em português
@@ -38,7 +39,7 @@ export async function construirApp() {
   // A interface do Swagger precisa carregar os próprios scripts, por isso o helmet libera só ela
   await app.register(helmet, { contentSecurityPolicy: false })
   // credentials: o navegador só manda o cookie de sessão para outra porta/domínio se o CORS permitir
-  await app.register(cors, { origin: config.FRONTEND_URL, credentials: true })
+  await app.register(cors, { origin: config.FRONTEND_URL, credentials: true, methods: ['GET', 'POST', 'PATCH'] })
   await app.register(rateLimit, { max: 100, timeWindow: '1 minute' })
   await app.register(cookie)
   await app.register(jwt, { secret: config.JWT_SECRET })
@@ -96,6 +97,7 @@ export async function construirApp() {
   await app.register(rotasPublicas, { prefix: '/api/v1' })
   await app.register(rotasAuth, { prefix: '/api/v1' })
   await app.register(rotasColaboracao, { prefix: '/api/v1' })
+  await app.register(rotasModeracao, { prefix: '/api/v1' })
 
   return app
 }

@@ -7,6 +7,8 @@ import NaoEncontrada from './paginas/NaoEncontrada'
 import Vitrine from './paginas/Vitrine'
 import Entrar from './paginas/Entrar'
 import CriarConta from './paginas/CriarConta'
+import Sugerir from './paginas/Sugerir'
+import Moderacao from './paginas/Moderacao'
 
 export default function App() {
   return (
@@ -17,6 +19,8 @@ export default function App() {
         <Route path="servicos/:id" element={<DetalheServico />} />
         <Route path="entrar" element={<Entrar />} />
         <Route path="criar-conta" element={<CriarConta />} />
+        <Route path="sugerir" element={<Sugerir />} />
+        <Route path="moderacao" element={<Moderacao />} />
         <Route path="vitrine" element={<Vitrine />} />
         <Route path="*" element={<NaoEncontrada />} />
       </Route>

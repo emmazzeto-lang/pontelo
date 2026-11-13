@@ -2,7 +2,17 @@ import { buscarDetalheExemplo } from '../dados/detalhesExemplo'
 import { servicosExemplo } from '../dados/servicosExemplo'
 import { filtrarServicos } from './filtrar'
 import { guardarSessao, limparSessao, obterToken, type Usuario } from './sessao'
-import type { Categoria, Local, Servico, ServicoDetalhe } from './tipos'
+import type {
+  Categoria,
+  DenunciaModeracao,
+  Local,
+  NovaSugestao,
+  Servico,
+  ServicoDetalhe,
+  ServicoModeracao,
+  StatusDenuncia,
+  StatusServico,
+} from './tipos'
 
 const URL_API = import.meta.env.VITE_API_URL
 const usarExemplos = import.meta.env.VITE_USAR_EXEMPLOS === 'true'
@@ -26,7 +36,7 @@ export class ErroApi extends Error {
 
 type Opcoes = {
   corpo?: unknown
-  metodo?: 'GET' | 'POST'
+  metodo?: 'GET' | 'POST' | 'PATCH'
   // Rotas /auth: o navegador precisa mandar e receber o cookie de sessão
   comCookie?: boolean
 }
@@ -146,6 +156,37 @@ export async function confirmarServico(id: string): Promise<string> {
     { metodo: 'POST' },
   )
   return resposta.dados.ultima_verificacao_em
+}
+
+// POST /servicos (exige login): entra como pendente
+export async function sugerirServico(sugestao: NovaSugestao) {
+  if (usarExemplos) {
+    await esperar(600)
+    return
+  }
+  await pedir('/servicos', { corpo: sugestao })
+}
+
+// ---------------- Moderação (só papel "moderador") ----------------
+
+export async function listarFila(status: StatusServico) {
+  const resposta = await pedir<{ dados: ServicoModeracao[] }>(`/moderacao/servicos?status=${status}`)
+  return resposta.dados
+}
+
+export async function decidirServico(id: string, decisao: 'publicar' | 'rejeitar' | 'arquivar', motivo?: string) {
+  await pedir(`/moderacao/servicos/${encodeURIComponent(id)}/decisao`, {
+    corpo: { decisao, ...(motivo?.trim() && { motivo: motivo.trim() }) },
+  })
+}
+
+export async function listarDenuncias(status: StatusDenuncia) {
+  const resposta = await pedir<{ dados: DenunciaModeracao[] }>(`/moderacao/denuncias?status=${status}`)
+  return resposta.dados
+}
+
+export async function mudarDenuncia(id: string, status: Exclude<StatusDenuncia, 'aberta'>) {
+  await pedir(`/moderacao/denuncias/${encodeURIComponent(id)}`, { metodo: 'PATCH', corpo: { status } })
 }
 
 // ---------------- Conta ----------------

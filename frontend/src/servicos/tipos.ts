@@ -43,3 +43,50 @@ export type ServicoDetalhe = Omit<Servico, 'distancia_m'> & {
   documentos_exigidos: string | null
   horarios: Horario[]
 }
+// Corpo de POST /servicos (sugestão de serviço novo)
+export type NovaSugestao = {
+  nome: string
+  categoria: Categoria
+  descricao: string
+  endereco: string
+  cidade: string
+  uf: string
+  cep: string
+  telefone: string
+  documentos_exigidos: string
+  endereco_restrito: boolean
+  horarios: Horario[]
+}
+
+export type StatusServico = 'pendente' | 'publicado' | 'rejeitado' | 'arquivado'
+
+// GET /moderacao/servicos: a moderação vê tudo, inclusive endereço restrito
+export type ServicoModeracao = {
+  id: string
+  nome: string
+  categoria: Categoria
+  descricao: string | null
+  endereco: string
+  endereco_restrito: boolean
+  cidade: string
+  uf: string
+  cep: string | null
+  telefone: string | null
+  documentos_exigidos: string | null
+  status: StatusServico
+  criado_em: string
+  localizacao: { lat: number; lng: number }
+  horarios: Horario[]
+  denuncias_abertas: number
+}
+
+export type StatusDenuncia = 'aberta' | 'em_analise' | 'resolvida' | 'descartada'
+
+export type DenunciaModeracao = {
+  id: string
+  motivo: string
+  descricao: string | null
+  status: StatusDenuncia
+  criado_em: string
+  servico: { id: string; nome: string; status: StatusServico }
+}
