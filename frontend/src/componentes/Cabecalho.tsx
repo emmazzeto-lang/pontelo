@@ -68,6 +68,16 @@ function Conta() {
     const primeiroNome = sessao.usuario.nome.split(' ')[0]
     return (
       <div className="flex items-center gap-1">
+        {sessao.usuario.papel === 'moderador' && (
+          <NavLink
+            to="/moderacao"
+            className={({ isActive }) =>
+              `inline-flex min-h-11 items-center rounded-[10px] px-3 font-semibold hover:bg-azul-claro ${isActive ? 'text-azul underline decoration-2 underline-offset-8' : ''}`
+            }
+          >
+            Moderação
+          </NavLink>
+        )}
         <span className="inline-flex items-center gap-2 px-2 font-semibold">
           <Icone nome="usuario" tamanho={20} cor={cores.marinho} destaque={cores.douradoEscuro} />
           {primeiroNome}
